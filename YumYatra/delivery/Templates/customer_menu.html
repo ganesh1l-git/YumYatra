@@ -1,0 +1,93 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YumYatra - Menu</title>
+    <link class="no-card" rel="stylesheet" href="{% static 'premium.css' %}">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Navigation Bar -->
+        <header class="navbar" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 30px;">
+            <div style="display: flex; align-items: center; gap: 30px;">
+                <div class="navbar-brand" style="margin: 0; padding: 0; background: none;">
+                    <a href="/" style="background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🍕 YumYatra</a>
+                </div>
+                <a href="{% url 'show_cart' username %}" class="btn" style="padding: 10px 24px; font-size: 0.95rem; box-shadow: none; white-space: nowrap;">🛒 View Cart</a>
+            </div>
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <div style="font-size: 0.9rem; color: #94a3b8;">
+                    Logged in as: <strong style="color: #f8fafc;">{{ username }}</strong>
+                </div>
+                <a href="javascript:history.back()" style="background: transparent; border: 1px solid rgba(255, 255, 255, 0.2); color: #94a3b8; padding: 8px 20px; font-size: 0.9rem; border-radius: 10px; font-weight: 500; text-decoration: none; display: inline-block; -webkit-text-fill-color: #94a3b8; white-space: nowrap; transition: all 0.3s;" onmouseover="this.style.background='rgba(255, 255, 255, 0.05)'; this.style.borderColor='rgba(255, 255, 255, 0.4)'; this.style.color='#f8fafc'; this.style.webkitTextFillColor='#f8fafc';" onmouseout="this.style.background='transparent'; this.style.borderColor='rgba(255, 255, 255, 0.2)'; this.style.color='#94a3b8'; this.style.webkitTextFillColor='#94a3b8';">⬅️ Restaurants</a>
+            </div>
+        </header>
+
+        <!-- Restaurant Title & Welcome -->
+        <div class="header-welcome" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 20px; margin-bottom: 30px;">
+            <div>
+                <h2 style="margin: 0; font-size: 1.8rem; background: none; -webkit-text-fill-color: initial; color: #f8fafc;">{{ restaurant.name }} Menu 🍽️</h2>
+                <p style="color: #94a3b8; margin: 5px 0 0 0; font-size: 1rem;">{{ restaurant.cuisine }}</p>
+            </div>
+            <div style="text-align: right;">
+                <span style="background: rgba(255, 193, 7, 0.15); border: 1px solid rgba(255, 193, 7, 0.3); color: #ffc107; padding: 8px 16px; border-radius: 20px; font-size: 1.05rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                    ⭐ {{ restaurant.rating }} Rating
+                </span>
+            </div>
+        </div>
+
+        <!-- Menu items (horizontal row cards) -->
+        <div class="row-list">
+            {% for item in itemList %}
+                <div class="row-card">
+                    <!-- Left: Food Item Icon (All aligned to same size) -->
+                    <div class="row-icon-wrapper">
+                        <img src="{{ item.picture }}" alt="{{ item.name }}">
+                    </div>
+                    
+                    <!-- Middle: Info details -->
+                    <div class="row-info">
+                        <div class="row-title-line">
+                            <span class="row-title">{{ item.name }}</span>
+                        </div>
+                        <div class="row-subtitle" style="font-size: 0.85rem; line-height: 1.4;">{{ item.description }}</div>
+                    </div>
+                    
+                    <!-- Right: Quantity, Price and Add to Cart action button -->
+                    <div class="row-action" style="display: flex; flex-direction: column; align-items: flex-end; gap: 10px;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            {% if item.vegetarian %}
+                                <span class="badge badge-veg" style="font-size: 0.75rem; padding: 4px 10px; margin: 0;">🟢 Veg</span>
+                            {% else %}
+                                <span class="badge badge-nonveg" style="font-size: 0.75rem; padding: 4px 10px; margin: 0;">🔴 Non-Veg</span>
+                            {% endif %}
+                            <span class="card-price" style="font-size: 1.3rem;">₹{{ item.price }}</span>
+                        </div>
+                        
+                        <div style="display: flex; align-items: center; gap: 10px; margin-top: 5px;">
+                            <div class="quantity-selector">
+                                <label for="qty-{{ item.id }}" style="margin: 0; font-size: 0.8rem;">Qty:</label>
+                                <input type="number" id="qty-{{ item.id }}" class="quantity-input" value="1" min="1" max="25">
+                            </div>
+                            <a href="#" onclick="addToCart(event, '{{ item.id }}', '{{ username }}')" class="btn" style="padding: 10px 20px; font-size: 0.9rem; white-space: nowrap;">Add to Cart</a>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <p style="color: var(--text-secondary); text-align: center; padding: 40px 0;">No items available in the menu.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        function addToCart(event, itemId, username) {
+            event.preventDefault();
+            const qtyInput = document.getElementById('qty-' + itemId);
+            const quantity = qtyInput ? qtyInput.value : 1;
+            window.location.href = `/add_to_cart/${itemId}/${username}?quantity=${quantity}`;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YumYatra - Checkout</title>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <link rel="stylesheet" href="{% static 'premium.css' %}">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Navigation Bar -->
+        <header class="navbar">
+            <div class="navbar-brand">
+                <a href="/" style="background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🍕 YumYatra</a>
+            </div>
+            <nav class="navbar-links">
+                <a href="javascript:history.back()">⬅️ Back to Cart</a>
+            </nav>
+        </header>
+
+        <!-- Checkout Header -->
+        <div class="header-welcome">
+            <div>
+                <h2>Secure Checkout 🔒</h2>
+                <p style="color: var(--text-secondary); margin-top: 5px;">Review order details and complete payment</p>
+            </div>
+        </div>
+
+        <div class="card" style="max-width: 600px; padding: 30px;">
+            <h3 style="text-align: left; font-size: 1.3rem; margin-bottom: 20px; border-bottom: 1px solid var(--glass-border); padding-bottom: 10px; background: none; -webkit-text-fill-color: initial;">Order Summary</h3>
+            
+            {% if error %}
+                <div style="background: rgba(224, 49, 49, 0.1); border: 1px solid rgba(224, 49, 49, 0.3); padding: 15px; border-radius: 12px; margin-bottom: 20px; color: #ff8787; text-align: center;">
+                    ⚠️ {{ error }}
+                </div>
+                <div class="flex justify-center">
+                    <a href="javascript:history.back()" class="btn logout-btn">Go Back</a>
+                </div>
+            {% else %}
+                <table class="no-card" style="margin-bottom: 25px;">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th style="text-align: right;">Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cart_item in cart_items %}
+                        <tr>
+                            <td>{{ cart_item.item.name }} <span style="color: var(--text-secondary); font-size: 0.85rem;">(x{{ cart_item.quantity }})</span></td>
+                            <td style="text-align: right; color: var(--text-primary);">₹{{ cart_item.item.price }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <div style="margin-bottom: 25px; padding-top: 15px; border-top: 1px solid var(--glass-border);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.95rem;">
+                        <span style="color: var(--text-secondary);">Subtotal:</span>
+                        <span style="color: var(--text-primary);">₹{{ subtotal }}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.95rem;">
+                        <span style="color: var(--text-secondary);">GST (5%):</span>
+                        <span style="color: var(--text-primary);">₹{{ gst }}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.95rem;">
+                        <span style="color: var(--text-secondary);">Restaurant Handling Fee:</span>
+                        <span style="color: var(--text-primary);">₹{{ handling_fee }}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.95rem;">
+                        <span style="color: var(--text-secondary);">Delivery Fee:</span>
+                        {% if delivery_fee == 0.0 %}
+                            <span style="color: #4caf50; font-weight: 600;">FREE</span>
+                        {% else %}
+                            <span style="color: var(--text-primary);">₹{{ delivery_fee }}</span>
+                        {% endif %}
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 0.95rem;">
+                        <span style="color: var(--text-secondary);">Services Fee:</span>
+                        <span style="color: var(--text-primary);">₹{{ service_fee }}</span>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--glass-border); padding-top: 15px; margin-bottom: 30px;">
+                        <span style="font-size: 1.1rem; color: var(--text-secondary);">Grand Total:</span>
+                        <strong style="font-size: 1.6rem; color: var(--accent-color);">₹{{ grand_total }}</strong>
+                    </div>
+                </div>
+
+                <div class="flex justify-center">
+                    <button id="rzp-button" style="width: 100%; padding: 16px; font-size: 1.1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">
+                        💳 Pay ₹{{ grand_total }} via Razorpay
+                    </button>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if not error %}
+    <script>
+        var options = {
+            "key": "{{ razorpay_key_id }}",  // Razorpay API key from context
+            "amount": "{{ amount_paise }}",   // Amount in paise from context
+            "currency": "INR",
+            "name": "YumYatra",
+            "description": "Order Payment",
+            "order_id": "{{ order_id }}",     // Razorpay order ID from context
+            "handler": function (response) {
+                alert("🎉 Payment Successful!");
+                window.location.href = "{% url 'orders' username %}";
+            },
+            "prefill": {
+                "name": "{{ username }}",
+                "email": "customer@example.com",
+                "contact": "9999999999"
+            },
+            "theme": {
+                "color": "#ff6b6b"
+            }
+        };
+        var rzp = new Razorpay(options);
+    
+        document.getElementById('rzp-button').onclick = function(e) {
+            rzp.open();
+            e.preventDefault();
+        }
+    </script>
+    {% endif %}
+</body>
+</html>

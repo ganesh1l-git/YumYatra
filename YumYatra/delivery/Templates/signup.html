@@ -1,0 +1,46 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YumYatra - Sign Up</title>
+    <link rel="stylesheet" href="{% static 'premium.css' %}">
+</head>
+<body>
+    <div class="app-container" style="display: flex; align-items: center; justify-content: center; min-height: 90vh;">
+        <div class="card" style="width: 100%; max-width: 500px; padding: 40px 30px; margin: 20px 0;">
+            <div style="text-align: center; margin-bottom: 30px;">
+                <span style="font-size: 2.5rem;">📝</span>
+                <h2 style="margin: 15px 0 5px; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 1.8rem;">Create Account</h2>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; text-align: center !important; display: block; margin: 0 auto;">Join YumYatra for delicious deliveries</p>
+            </div>
+
+            <form action="{% url 'signup' %}" method="POST" class="auth-centered-form" style="border: none; padding: 0; background: none; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; margin: 0; max-width: 100%;">
+                {% csrf_token %}
+                
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" placeholder="Choose a username" required>
+                
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Create a password" required>
+                
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" placeholder="you@example.com" required>
+                
+                <label for="phone">Phone Number</label>
+                <input type="text" id="phone" name="phone" placeholder="10-digit mobile number" required>
+                
+                <label for="address">Delivery Address</label>
+                <input type="text" id="address" name="address" placeholder="Flat, street, area details" required>
+                
+                <button type="submit" style="width: 100%; margin-top: 10px; padding: 14px;">SIGN UP</button>
+            </form>
+            
+            <div class="text-center mt-4" style="font-size: 0.9rem; color: var(--text-secondary);">
+                Already have an account? <a href="{% url 'open_signin' %}" style="color: var(--accent-color); font-weight: 600;">Sign In</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

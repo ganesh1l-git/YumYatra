@@ -1,0 +1,53 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YumYatra - New Restaurant</title>
+    <link rel="stylesheet" href="{% static 'premium.css' %}">
+</head>
+<body>
+    <div class="app-container" style="max-width: 600px; margin: 0 auto;">
+        <!-- Navigation Bar -->
+        <header class="navbar" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 0; margin-bottom: 30px; border-bottom: 1px solid var(--glass-border);">
+            <div class="navbar-brand" style="margin: 0; padding: 0; background: none;">
+                <a href="/" style="background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 1.8rem; font-family: var(--font-heading); font-weight: 800;">🍕 YumYatra</a>
+            </div>
+            <div>
+                <a href="{% url 'admin_home' %}" style="background: transparent; border: 1px solid rgba(255, 255, 255, 0.2); color: #94a3b8; padding: 8px 20px; font-size: 0.9rem; border-radius: 10px; font-weight: 500; text-decoration: none; display: inline-block; -webkit-text-fill-color: #94a3b8; white-space: nowrap; transition: all 0.3s;" onmouseover="this.style.background='rgba(255, 255, 255, 0.05)'; this.style.borderColor='rgba(255, 255, 255, 0.4)'; this.style.color='#f8fafc'; this.style.webkitTextFillColor='#f8fafc';" onmouseout="this.style.background='transparent'; this.style.borderColor='rgba(255, 255, 255, 0.2)'; this.style.color='#94a3b8'; this.style.webkitTextFillColor='#94a3b8';">⬅️ Dashboard</a>
+            </div>
+        </header>
+
+        <div class="header-welcome" style="text-align: left; margin-bottom: 30px;">
+            <h2 style="text-align: left; margin: 0; font-size: 1.8rem; background: none; -webkit-text-fill-color: initial; color: var(--text-primary);">Onboard Restaurant 🏪</h2>
+            <p style="color: var(--text-secondary); margin-top: 5px;">Fill details to register a new restaurant partner.</p>
+        </div>
+
+        <form action="{% url 'add_restaurant' %}" method="POST" style="margin: 0;">
+            {% csrf_token %}
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-secondary);">Restaurant Name</label>
+                <input type="text" name="name" required style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--glass-border); background: rgba(255, 255, 255, 0.03); color: white;">
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-secondary);">Cover Image URL</label>
+                <input type="url" name="picture" placeholder="https://..." style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--glass-border); background: rgba(255, 255, 255, 0.03); color: white;">
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-secondary);">Cuisine Specialties (e.g., Italian, Chinese)</label>
+                <input type="text" name="cuisine" required style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--glass-border); background: rgba(255, 255, 255, 0.03); color: white;">
+            </div>
+
+            <div style="margin-bottom: 30px;">
+                <label style="display: block; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-secondary);">Initial Rating</label>
+                <input type="number" name="rating" min="0" max="5" step="0.1" value="4.0" style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--glass-border); background: rgba(255, 255, 255, 0.03); color: white;">
+            </div>
+
+            <button type="submit" style="width: 100%; padding: 14px; font-size: 1rem;">Add Restaurant Partner</button>
+        </form>
+    </div>
+</body>
+</html>

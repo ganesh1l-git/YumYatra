@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YumYatra - Premium Food Delivery</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'premium.css' %}">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Brand Header -->
+        <header class="navbar" style="justify-content: center;">
+            <div class="navbar-brand">
+                <span>🍕 YumYatra</span>
+            </div>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="hero" style="padding: 60px 20px; text-align: center;">
+            <h1 style="text-align: center; margin-bottom: 20px;">Where you find the true taste ☕</h1>
+            <p style="max-width: 680px; margin: 0 auto 30px; text-align: center; padding: 0 40px; line-height: 1.6; color: var(--text-secondary); font-size: 1.25rem; display: block;">
+                Order delicious meals from your favorite restaurants and get them delivered hot & fresh to your doorstep in minutes!
+            </p>
+            
+            <div class="flex justify-center gap-4 mt-4">
+                <a href="{% url 'open_signin' %}" class="btn" style="padding: 14px 32px; font-size: 1.1rem; border-radius: 12px;">Sign In</a>
+                <a href="{% url 'open_signup' %}" style="background: transparent; border: 2px solid var(--accent-color); color: var(--accent-color); padding: 12px 32px; font-size: 1.1rem; border-radius: 12px; font-weight: 600; text-decoration: none; display: inline-block; -webkit-text-fill-color: var(--accent-color); transition: all 0.3s;" onmouseover="this.style.background='var(--accent-gradient)'; this.style.color='#ffffff'; this.style.borderColor='transparent'; this.style.webkitTextFillColor='#ffffff';" onmouseout="this.style.background='transparent'; this.style.color='var(--accent-color)'; this.style.borderColor='var(--accent-color)'; this.style.webkitTextFillColor='var(--accent-color)';">Sign Up</a>
+            </div>
+        </section>
+        
+        <!-- Feature Cards -->
+        <div class="grid">
+            <div class="card-premium text-center" style="padding: 30px;">
+                <div style="font-size: 3rem; margin-bottom: 15px;">⚡</div>
+                <h3 class="card-title" style="text-align: center; margin-bottom: 10px;">Super Fast Delivery</h3>
+                <p style="color: var(--text-secondary); font-size: 0.9rem;">Your food will be delivered in minutes, hot and fresh.</p>
+            </div>
+            
+            <div class="card-premium text-center" style="padding: 30px;">
+                <div style="font-size: 3rem; margin-bottom: 15px;">🍲</div>
+                <h3 class="card-title" style="text-align: center; margin-bottom: 10px;">Top Restaurants</h3>
+                <p style="color: var(--text-secondary); font-size: 0.9rem;">Choose from a curation of the best eateries around you.</p>
+            </div>
+            
+            <div class="card-premium text-center" style="padding: 30px;">
+                <div style="font-size: 3rem; margin-bottom: 15px;">💳</div>
+                <h3 class="card-title" style="text-align: center; margin-bottom: 10px;">Secure Payments</h3>
+                <p style="color: var(--text-secondary); font-size: 0.9rem;">Seamless checkout options including Razorpay and UPI.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

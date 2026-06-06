@@ -1,0 +1,63 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YumYatra - Restaurants</title>
+    <link rel="stylesheet" href="{% static 'premium.css' %}">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Navigation Bar -->
+        <header class="navbar" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 30px;">
+            <div style="display: flex; align-items: center; gap: 30px;">
+                <div class="navbar-brand" style="margin: 0; padding: 0; background: none;">
+                    <a href="/" style="background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🍕 YumYatra</a>
+                </div>
+                <a href="{% url 'show_cart' username %}" class="btn" style="padding: 10px 24px; font-size: 0.95rem; box-shadow: none; white-space: nowrap;">🛒 View Cart</a>
+            </div>
+            <div>
+                <a href="{% url 'open_signin' %}" style="background: transparent; border: 1px solid rgba(255, 255, 255, 0.2); color: #94a3b8; padding: 8px 20px; font-size: 0.9rem; border-radius: 10px; font-weight: 500; text-decoration: none; display: inline-block; -webkit-text-fill-color: #94a3b8; transition: all 0.3s;" onmouseover="this.style.background='rgba(255, 255, 255, 0.05)'; this.style.borderColor='rgba(255, 255, 255, 0.4)'; this.style.color='#f8fafc'; this.style.webkitTextFillColor='#f8fafc';" onmouseout="this.style.background='transparent'; this.style.borderColor='rgba(255, 255, 255, 0.2)'; this.style.color='#94a3b8'; this.style.webkitTextFillColor='#94a3b8';">Logout</a>
+            </div>
+        </header>
+
+        <!-- Welcome Banner -->
+        <div class="header-welcome">
+            <div>
+                <h2>Welcome back, {{ username }}! 👋</h2>
+                <p style="color: var(--text-secondary); margin-top: 5px;">Discover the best food & drinks around you</p>
+            </div>
+        </div>
+
+        <!-- Restaurant list (borderless grid) -->
+        <h3 style="text-align: left; font-size: 1.5rem; margin-bottom: 25px; border-bottom: 2px solid var(--glass-border); padding-bottom: 10px; background: none; -webkit-text-fill-color: initial;">Popular Restaurants</h3>
+        
+        <div style="display: grid !important; grid-template-columns: repeat(auto-fill, minmax(440px, 1fr)) !important; gap: 30px !important; margin-bottom: 40px !important;">
+            {% for r in restaurantList %}
+                <div style="display: flex !important; justify-content: space-between !important; align-items: center !important; background: rgba(17, 24, 39, 0.7) !important; backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important; border: 1px solid rgba(255, 255, 255, 0.08) !important; border-radius: 20px !important; padding: 20px !important; margin-bottom: 10px !important;">
+                    <!-- Left: Restaurant name, logo, below that rating and other info -->
+                    <div style="display: flex !important; flex-direction: column !important; gap: 10px !important; align-items: flex-start !important; text-align: left !important;">
+                        <span style="font-family: var(--font-heading); font-size: 1.4rem; font-weight: 700; color: var(--text-primary); text-align: left; display: block;">{{ r.name }}</span>
+                        <div style="display: flex !important; align-items: center !important; gap: 15px !important; text-align: left !important;">
+                            <img src="{{ r.picture }}" style="width: 90px !important; height: 90px !important; border-radius: 12px !important; object-fit: cover !important; border: 1px solid rgba(255, 255, 255, 0.08) !important; flex-shrink: 0 !important;" alt="{{ r.name }}">
+                            <div style="display: flex !important; flex-direction: column !important; gap: 4px !important; font-size: 0.85rem !important; color: var(--text-secondary) !important; text-align: left !important; align-items: flex-start !important;">
+                                <span style="color: var(--text-primary) !important; font-weight: 600 !important;">⭐ {{ r.rating }} Rating</span>
+                                <span>Cuisine: {{ r.cuisine }}</span>
+                                <span>⚡ 25-35 mins delivery</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right: View Restaurant action button -->
+                    <div style="flex-shrink: 0 !important; margin-left: 20px !important;">
+                        <a href="{% url 'view_menu' r.id username %}" class="btn" style="padding: 12px 24px !important; font-size: 0.95rem !important; white-space: nowrap !important;">View Menu</a>
+                    </div>
+                </div>
+            {% empty %}
+                <p style="color: var(--text-secondary); text-align: center; padding: 40px 0; grid-column: 1 / -1;">No restaurants found.</p>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

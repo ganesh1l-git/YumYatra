@@ -1,0 +1,64 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YumYatra - Registered Restaurants</title>
+    <link rel="stylesheet" href="{% static 'premium.css' %}">
+</head>
+<body>
+    <div class="app-container" style="max-width: 1100px; margin: 0 auto;">
+        <!-- Navigation Bar -->
+        <header class="navbar" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; margin-bottom: 40px; border-bottom: 1px solid var(--glass-border);">
+            <div class="navbar-brand" style="margin: 0; padding: 0; background: none;">
+                <a href="/" style="background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 1.8rem; font-family: var(--font-heading); font-weight: 800;">🍕 YumYatra</a>
+            </div>
+            <div>
+                <a href="{% url 'admin_home' %}" style="background: transparent; border: 1px solid rgba(255, 255, 255, 0.2); color: #94a3b8; padding: 8px 20px; font-size: 0.9rem; border-radius: 10px; font-weight: 500; text-decoration: none; display: inline-block; -webkit-text-fill-color: #94a3b8; white-space: nowrap; transition: all 0.3s;" onmouseover="this.style.background='rgba(255, 255, 255, 0.05)'; this.style.borderColor='rgba(255, 255, 255, 0.4)'; this.style.color='#f8fafc'; this.style.webkitTextFillColor='#f8fafc';" onmouseout="this.style.background='transparent'; this.style.borderColor='rgba(255, 255, 255, 0.2)'; this.style.color='#94a3b8'; this.style.webkitTextFillColor='#94a3b8';">⬅️ Admin Dashboard</a>
+            </div>
+        </header>
+
+        <div class="header-welcome" style="text-align: left; margin-bottom: 30px;">
+            <h2 style="text-align: left; margin: 0; font-size: 1.8rem; background: none; -webkit-text-fill-color: initial; color: var(--text-primary);">Registered Restaurant Partners 🏪</h2>
+            <p style="color: var(--text-secondary); margin-top: 5px;">Onboarded restaurants on the YumYatra platform.</p>
+        </div>
+
+        <div class="card" style="max-width: 100%; padding: 25px; overflow-x: auto;">
+            <table class="no-card" style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="border-bottom: 1px solid var(--glass-border); font-size: 0.9rem; color: var(--text-secondary);">
+                        <th style="text-align: left; padding: 12px 10px;">Restaurant Details</th>
+                        <th style="text-align: left; padding: 12px 10px;">Cuisine</th>
+                        <th style="text-align: center; padding: 12px 10px;">Rating</th>
+                        <th style="text-align: right; padding: 12px 10px;">Operations & Menu</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in restaurantList %}
+                        <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05); font-size: 0.95rem;">
+                            <td style="padding: 15px 10px; display: flex; align-items: center; gap: 15px;">
+                                <img src="{{ r.picture }}" style="width: 65px; height: 65px; object-fit: cover; border-radius: 12px; border: 1px solid var(--glass-border);" alt="{{ r.name }}">
+                                <strong style="color: var(--text-primary); font-size: 1.1rem;">{{ r.name }}</strong>
+                            </td>
+                            <td style="padding: 15px 10px; color: var(--text-secondary);">{{ r.cuisine }}</td>
+                            <td style="text-align: center; padding: 15px 10px; color: #ffc107; font-weight: 600;">⭐ {{ r.rating }}</td>
+                            <td style="text-align: right; padding: 15px 10px;">
+                                <div style="display: flex; gap: 8px; justify-content: flex-end; align-items: center;">
+                                    <a href="{% url 'open_update_menu' r.id %}" style="background: rgba(77, 171, 247, 0.12); border: 1px solid rgba(77, 171, 247, 0.4); color: #4dabf7; padding: 6px 14px; font-size: 0.85rem; border-radius: 8px; font-weight: 500; text-decoration: none; -webkit-text-fill-color: #4dabf7;" onmouseover="this.style.background='rgba(77, 171, 247, 0.25)';" onmouseout="this.style.background='rgba(77, 171, 247, 0.12)';">📋 Menu</a>
+                                    <a href="{% url 'open_update_restaurant' r.id %}" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); color: var(--text-secondary); padding: 6px 14px; font-size: 0.85rem; border-radius: 8px; font-weight: 500; text-decoration: none; -webkit-text-fill-color: var(--text-secondary);" onmouseover="this.style.borderColor='rgba(255,255,255,0.3)'; this.style.color='#fff';" onmouseout="this.style.borderColor='rgba(255,255,255,0.15)'; this.style.color='var(--text-secondary)';">✏️ Edit</a>
+                                    <a href="{% url 'delete_restaurant' r.id %}" style="background: rgba(224, 49, 49, 0.12); border: 1px solid rgba(224, 49, 49, 0.4); color: #ff6b6b; padding: 6px 14px; font-size: 0.85rem; border-radius: 8px; font-weight: 500; text-decoration: none; -webkit-text-fill-color: #ff6b6b;" onmouseover="this.style.background='rgba(224, 49, 49, 0.25)';" onmouseout="this.style.background='rgba(224, 49, 49, 0.12)';">🗑️ Delete</a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="4" style="text-align: center; color: var(--text-secondary); padding: 40px 0;">No restaurants onboarding yet.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
