@@ -17,3 +17,11 @@ from django.core.wsgi import get_wsgi_application
 
 application = get_wsgi_application()
 app = application
+
+# Auto-migrate SQLite in /tmp on serverless cold start if needed
+if not os.getenv('DATABASE_URL'):
+    try:
+        from django.core.management import call_command
+        call_command('migrate', interactive=False)
+    except Exception as e:
+        print(f"Serverless migration note: {e}")

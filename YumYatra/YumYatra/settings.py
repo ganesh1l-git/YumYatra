@@ -118,18 +118,24 @@ else:
 
     if is_serverless:
         tmp_db = Path('/tmp/db.sqlite3')
-        orig_db = BASE_DIR / 'db.sqlite3'
-        if not orig_db.exists():
-            orig_db = Path(__file__).resolve().parent.parent / 'db.sqlite3'
-        
-        # Copy seeded database to writable /tmp directory if needed
-        if orig_db.exists() and (not tmp_db.exists() or tmp_db.stat().st_size == 0):
-            try:
-                shutil.copy2(orig_db, tmp_db)
-            except Exception:
-                pass
+        candidates = [
+            BASE_DIR / 'db.sqlite3',
+            BASE_DIR.parent / 'db.sqlite3',
+            Path(__file__).resolve().parent.parent / 'db.sqlite3',
+            Path('/var/task/YumYatra/db.sqlite3'),
+            Path('/var/task/db.sqlite3'),
+        ]
+        for orig_db in candidates:
+            if orig_db.exists() and orig_db.stat().st_size > 0:
+                if not tmp_db.exists() or tmp_db.stat().st_size == 0:
+                    try:
+                        shutil.copy2(orig_db, tmp_db)
+                    except Exception:
+                        pass
+                break
 
-        db_path = tmp_db if tmp_db.exists() else orig_db
+        # On serverless (Vercel/Lambda), SQLite must always use /tmp (the only writable directory)
+        db_path = tmp_db
     else:
         db_path = BASE_DIR / 'db.sqlite3'
 
