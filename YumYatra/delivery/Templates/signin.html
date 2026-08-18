@@ -1,37 +1,209 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YumYatra - Sign In</title>
-    {% load static %}
     <link rel="stylesheet" href="{% static 'premium.css' %}">
+    <style>
+        .role-selector {
+            display: flex;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            padding: 4px;
+            margin-bottom: 25px;
+            gap: 4px;
+        }
+        .role-btn {
+            flex: 1;
+            padding: 11px 8px;
+            border-radius: 10px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            box-shadow: none;
+            -webkit-text-fill-color: initial;
+        }
+        .role-btn.active {
+            background: var(--accent-gradient);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.35);
+        }
+        .role-btn:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+            transform: none;
+        }
+        .alert-box {
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .alert-error {
+            background: rgba(244, 67, 54, 0.15);
+            border: 1px solid rgba(244, 67, 54, 0.4);
+            color: #ff8a80;
+        }
+        .alert-success {
+            background: rgba(76, 175, 80, 0.15);
+            border: 1px solid rgba(76, 175, 80, 0.4);
+            color: #a5d6a7;
+        }
+        .alert-info {
+            background: rgba(33, 150, 243, 0.15);
+            border: 1px solid rgba(33, 150, 243, 0.4);
+            color: #90caf9;
+        }
+    </style>
 </head>
 <body>
-    <div class="app-container" style="display: flex; align-items: center; justify-content: center; min-height: 80vh;">
-        <div class="card" style="width: 100%; max-width: 450px; padding: 40px 30px; margin: 0;">
-            <div style="text-align: center; margin-bottom: 30px;">
-                <span style="font-size: 2.5rem;">🔑</span>
-                <h2 style="margin: 15px 0 5px; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 1.8rem;">Welcome Back</h2>
-                <p style="color: var(--text-secondary); font-size: 0.95rem; text-align: center !important; display: block; max-width: 320px; margin: 12px auto 0; line-height: 1.5; padding: 0 10px;">Order delicious meals from your favorite restaurants and get them delivered hot & fresh to your doorstep in minutes!</p>
-            </div>
+    <div class="app-container" style="display: flex; align-items: center; justify-content: center; min-height: 85vh;">
+        <div class="card" style="width: 100%; max-width: 480px; padding: 35px 30px; margin: 0;">
             
-            <form action="{% url 'signin' %}" method="post" class="auth-centered-form" style="border: none; padding: 0; background: none; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; margin: 0; max-width: 100%;">
+            <!-- Brand Header -->
+            <div style="text-align: center; margin-bottom: 20px;">
+                <a href="{% url 'say_hello' %}" style="text-decoration: none;">
+                    <span id="role-icon" style="font-size: 2.5rem; display: block; margin-bottom: 10px;">🍕</span>
+                </a>
+                <h2 id="role-title" style="margin: 0 0 5px; font-size: 1.8rem;">Welcome Back</h2>
+                <p id="role-desc" style="color: var(--text-secondary); font-size: 0.9rem; margin: 0 auto; max-width: 340px; line-height: 1.4;">
+                    Order delicious meals from your favorite restaurants.
+                </p>
+            </div>
+
+            <!-- Flash Messages -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert-box {% if message.tags == 'error' %}alert-error{% elif message.tags == 'success' %}alert-success{% else %}alert-info{% endif %}">
+                        <span>{% if message.tags == 'error' %}⚠️{% elif message.tags == 'success' %}✅{% else %}ℹ️{% endif %}</span>
+                        <span>{{ message }}</span>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- Role Selector Tabs -->
+            <div class="role-selector">
+                <button type="button" class="role-btn {% if active_role == 'user' or not active_role %}active{% endif %}" onclick="selectRole('user')">
+                    👤 User
+                </button>
+                <button type="button" class="role-btn {% if active_role == 'restaurant' %}active{% endif %}" onclick="selectRole('restaurant')">
+                    🏪 Restaurant
+                </button>
+                <button type="button" class="role-btn {% if active_role == 'admin' %}active{% endif %}" onclick="selectRole('admin')">
+                    🛡️ Admin
+                </button>
+            </div>
+
+            <!-- Sign In Form -->
+            <form action="{% url 'signin' %}" method="POST" class="auth-centered-form" style="border: none; padding: 0; background: none; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; margin: 0; max-width: 100%;">
                 {% csrf_token %}
+                <input type="hidden" name="role" id="role-input" value="{{ active_role|default:'user' }}">
                 
-                <label for="username">Username</label>
-                <input type="text" id="username" name="username" placeholder="Enter username" required>
+                <div style="margin-bottom: 18px;">
+                    <label for="username" id="username-label" style="display: block; margin-bottom: 6px; font-size: 0.85rem; color: var(--text-secondary);">Username</label>
+                    <input type="text" id="username" name="username" value="{{ entered_username|default:'' }}" placeholder="Enter username" required style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--glass-border); background: rgba(255, 255, 255, 0.03); color: white;">
+                </div>
                 
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" placeholder="Enter password" required>
+                <div style="margin-bottom: 25px;">
+                    <label for="password" id="password-label" style="display: block; margin-bottom: 6px; font-size: 0.85rem; color: var(--text-secondary);">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter password" required style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--glass-border); background: rgba(255, 255, 255, 0.03); color: white;">
+                </div>
                 
-                <button type="submit" style="width: 100%; margin-top: 10px; padding: 14px;">SIGN IN</button>
+                <button type="submit" id="submit-btn" style="width: 100%; padding: 14px; font-size: 1rem; letter-spacing: 0.03em;">SIGN IN</button>
             </form>
             
-            <div class="text-center mt-4" style="font-size: 0.9rem; color: var(--text-secondary);">
-                Don't have an account? <a href="{% url 'open_signup' %}" style="color: var(--accent-color); font-weight: 600;">Sign Up</a>
+            <div id="signup-prompt" class="text-center mt-4" style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 20px; text-align: center;">
+                <span id="signup-text">Don't have an account?</span> 
+                <a id="signup-link" href="{% url 'open_signup' %}?role=user" style="color: var(--accent-color); font-weight: 600;">Sign Up</a>
+            </div>
+
+            <div style="text-align: center; margin-top: 15px;">
+                <a href="{% url 'say_hello' %}" style="font-size: 0.85rem; color: var(--text-secondary);">← Back to Home</a>
             </div>
         </div>
     </div>
+
+    <script>
+        const roleData = {
+            user: {
+                icon: '🍕',
+                title: 'User Sign In',
+                desc: 'Order delicious meals from your favorite restaurants hot and fresh.',
+                userLabel: 'Customer Username',
+                userPlaceholder: 'Enter customer username',
+                btnText: 'SIGN IN AS USER',
+                signupPrompt: "Don't have an account? <a href=\"{% url 'open_signup' %}?role=user\" style=\"color: var(--accent-color); font-weight: 600;\">Sign Up</a>"
+            },
+            restaurant: {
+                icon: '🏪',
+                title: 'Restaurant Portal',
+                desc: 'Manage your restaurant menu, dishes, and track customer orders.',
+                userLabel: 'Restaurant Name',
+                userPlaceholder: 'Enter restaurant name',
+                btnText: 'SIGN IN AS RESTAURANT',
+                signupPrompt: "New restaurant partner? <a href=\"{% url 'open_signup' %}?role=restaurant\" style=\"color: var(--accent-color); font-weight: 600;\">Register Restaurant</a>"
+            },
+            admin: {
+                icon: '🛡️',
+                title: 'Admin Control Center',
+                desc: 'Platform analytics, commission metrics, and partner management.',
+                userLabel: 'Admin Username',
+                userPlaceholder: 'Enter admin username',
+                btnText: 'SIGN IN AS ADMIN',
+                signupPrompt: "<span style=\"color: #94a3b8;\">Admin accounts are managed by system security.</span>"
+            }
+        };
+
+        function selectRole(role) {
+            document.getElementById('role-input').value = role;
+            
+            document.querySelectorAll('.role-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            const data = roleData[role];
+            document.getElementById('role-icon').textContent = data.icon;
+            document.getElementById('role-title').textContent = data.title;
+            document.getElementById('role-desc').textContent = data.desc;
+            document.getElementById('username-label').textContent = data.userLabel;
+            document.getElementById('username').placeholder = data.userPlaceholder;
+            document.getElementById('submit-btn').textContent = data.btnText;
+            document.getElementById('signup-prompt').innerHTML = data.signupPrompt;
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const initialRole = document.getElementById('role-input').value || 'user';
+            const targetBtn = Array.from(document.querySelectorAll('.role-btn')).find(b => b.textContent.toLowerCase().includes(initialRole));
+            if (targetBtn) {
+                targetBtn.classList.add('active');
+            }
+            if (roleData[initialRole]) {
+                const data = roleData[initialRole];
+                document.getElementById('role-icon').textContent = data.icon;
+                document.getElementById('role-title').textContent = data.title;
+                document.getElementById('role-desc').textContent = data.desc;
+                document.getElementById('username-label').textContent = data.userLabel;
+                document.getElementById('username').placeholder = data.userPlaceholder;
+                document.getElementById('submit-btn').textContent = data.btnText;
+                document.getElementById('signup-prompt').innerHTML = data.signupPrompt;
+            }
+        });
+    </script>
 </body>
 </html>

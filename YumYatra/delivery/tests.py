@@ -1,3 +1,241 @@
-from django.test import TestCase
+from django.test import TestCase, Client
+from django.urls import reverse
+from .models import Customer, Restaurant, Item, Cart, CartItem, Order, OrderItem, Coupon, Review, Favorite
 
-# Create your tests here.
+
+class AuthenticationAndWorkflowTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.customer = Customer.objects.create(
+            username='ganesh_k',
+            password='ganesh',
+            email='ganesh@example.com',
+            phone='9876543210',
+            address='123 Main Street'
+        )
+        self.restaurant = Restaurant.objects.create(
+            name='The Pizza Oven',
+            password='rest123',
+            cuisine='Italian',
+            rating=4.8
+        )
+        self.item = Item.objects.create(
+            restaurant=self.restaurant,
+            name='Margherita Pizza',
+            description='Cheesy wood-fired pizza',
+            price=299.0,
+            vegetarian=True
+        )
+        self.coupon = Coupon.objects.create(
+            code='FIRSTBITE',
+            description='50% OFF up to 120',
+            discount_percent=50.0,
+            max_discount=120.0,
+            min_order_value=199.0
+        )
+
+    def test_admin_login_success(self):
+        response = self.client.post(reverse('signin'), {
+            'role': 'admin',
+            'username': 'admin',
+            'password': 'admin123'
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('admin_home'))
+        self.assertTrue(self.client.session.get('is_admin'))
+
+    def test_admin_login_invalid_password(self):
+        response = self.client.post(reverse('signin'), {
+            'role': 'admin',
+            'username': 'admin',
+            'password': 'wrongpassword'
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Invalid Admin credentials')
+        self.assertFalse(self.client.session.get('is_admin', False))
+
+    def test_user_login_success(self):
+        response = self.client.post(reverse('signin'), {
+            'role': 'user',
+            'username': 'ganesh_k',
+            'password': 'ganesh'
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('customer_home', kwargs={'username': 'ganesh_k'}))
+        self.assertEqual(self.client.session.get('username'), 'ganesh_k')
+
+    def test_user_login_failure(self):
+        response = self.client.post(reverse('signin'), {
+            'role': 'user',
+            'username': 'ganesh_k',
+            'password': 'wrongpassword'
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Invalid customer username or password')
+
+    def test_restaurant_login_success(self):
+        response = self.client.post(reverse('signin'), {
+            'role': 'restaurant',
+            'username': 'The Pizza Oven',
+            'password': 'rest123'
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('restaurant_home', kwargs={'restaurant_id': self.restaurant.id}))
+        self.assertTrue(self.client.session.get('is_restaurant'))
+
+    def test_restaurant_login_failure(self):
+        response = self.client.post(reverse('signin'), {
+            'role': 'restaurant',
+            'username': 'The Pizza Oven',
+            'password': 'wrongpassword'
+        })
+        self.assertContains(response, 'Invalid credentials for restaurant')
+
+    def test_coupon_application_and_order_flow(self):
+        # Add item to cart
+        self.client.get(f"/add_to_cart/{self.item.id}/{self.customer.username}/?quantity=2")
+
+        # Apply coupon
+        coupon_res = self.client.post(reverse('apply_coupon', kwargs={'username': self.customer.username}), {
+            'coupon_code': 'FIRSTBITE'
+        })
+        self.assertEqual(coupon_res.status_code, 302)
+        self.assertEqual(self.client.session.get('coupon_code'), 'FIRSTBITE')
+
+        # View cart with coupon applied
+        cart_res = self.client.get(reverse('show_cart', kwargs={'username': self.customer.username}))
+        self.assertEqual(cart_res.status_code, 200)
+        self.assertContains(cart_res, 'FIRSTBITE Applied!')
+        self.assertContains(cart_res, '120.0') # 120 cap
+
+        # Direct checkout
+        order_res = self.client.get(reverse('direct_order', kwargs={'username': self.customer.username}))
+        self.assertEqual(order_res.status_code, 200)
+        self.assertContains(order_res, 'Order Placed Successfully!')
+
+        # Verify DB order
+        order = Order.objects.filter(customer=self.customer).first()
+        self.assertIsNotNone(order)
+        self.assertEqual(order.status, 'Placed')
+        self.assertEqual(order.coupon_code, 'FIRSTBITE')
+        self.assertEqual(order.discount_amount, 120.0)
+
+    def test_live_order_tracking_and_status_update(self):
+        # Create an order
+        order = Order.objects.create(
+            customer=self.customer,
+            subtotal=299.0,
+            gst=14.95,
+            handling_fee=15.0,
+            delivery_fee=35.0,
+            service_fee=10.0,
+            grand_total=373.95,
+            status='Placed'
+        )
+        OrderItem.objects.create(
+            order=order,
+            item=self.item,
+            restaurant=self.restaurant,
+            price=299.0,
+            quantity=1
+        )
+
+        # Track order view
+        track_res = self.client.get(reverse('track_order', kwargs={'order_id': order.id, 'username': self.customer.username}))
+        self.assertEqual(track_res.status_code, 200)
+        self.assertContains(track_res, f'Tracking Order #{order.id}')
+        self.assertContains(track_res, 'Cooking')
+
+        # Update order status to 'Preparing' as restaurant partner
+        session = self.client.session
+        session['is_restaurant'] = True
+        session['restaurant_id'] = self.restaurant.id
+        session.save()
+
+        status_res = self.client.get(f"{reverse('update_order_status', kwargs={'order_id': order.id})}?status=Preparing")
+        self.assertEqual(status_res.status_code, 302)
+
+        order.refresh_from_db()
+        self.assertEqual(order.status, 'Preparing')
+
+    def test_1_click_reorder(self):
+        # Create a past order
+        order = Order.objects.create(
+            customer=self.customer,
+            subtotal=299.0,
+            gst=14.95,
+            handling_fee=15.0,
+            delivery_fee=35.0,
+            service_fee=10.0,
+            grand_total=373.95,
+            status='Delivered'
+        )
+        OrderItem.objects.create(
+            order=order,
+            item=self.item,
+            restaurant=self.restaurant,
+            price=299.0,
+            quantity=3
+        )
+
+        # Trigger reorder
+        reorder_res = self.client.get(reverse('reorder', kwargs={'order_id': order.id, 'username': self.customer.username}))
+        self.assertEqual(reorder_res.status_code, 302)
+
+        # Verify cart now contains 3x Margherita Pizza
+        cart = Cart.objects.get(customer=self.customer)
+        self.assertEqual(cart.cart_items.count(), 1)
+        self.assertEqual(cart.cart_items.first().quantity, 3)
+
+    def test_review_submission_and_rating_recalculation(self):
+        # 1. Attempt review without delivered order -> Should fail
+        res_fail = self.client.post(reverse('add_review', kwargs={'restaurant_id': self.restaurant.id, 'username': self.customer.username}), {
+            'rating': '5',
+            'comment': 'I have not ordered yet'
+        }, follow=True)
+        self.assertContains(res_fail, 'Only customers with a delivered order')
+        self.assertFalse(Review.objects.filter(restaurant=self.restaurant, customer=self.customer).exists())
+
+        # 2. Create a Delivered Order for this customer & restaurant
+        delivered_order = Order.objects.create(
+            customer=self.customer,
+            subtotal=299.0,
+            gst=14.95,
+            handling_fee=15.0,
+            delivery_fee=35.0,
+            service_fee=10.0,
+            grand_total=373.95,
+            status='Delivered'
+        )
+        OrderItem.objects.create(
+            order=delivered_order,
+            item=self.item,
+            restaurant=self.restaurant,
+            price=299.0,
+            quantity=1
+        )
+
+        # 3. Attempt review with delivered order -> Should succeed
+        res_success = self.client.post(reverse('add_review', kwargs={'restaurant_id': self.restaurant.id, 'username': self.customer.username}), {
+            'rating': '5',
+            'comment': 'Exceptional crispy crust and savory sauce!'
+        }, follow=True)
+        self.assertContains(res_success, 'Your verified review')
+
+        review = Review.objects.filter(restaurant=self.restaurant, customer=self.customer).first()
+        self.assertIsNotNone(review)
+        self.assertEqual(review.rating, 5)
+
+        self.restaurant.refresh_from_db()
+        self.assertEqual(self.restaurant.rating, 5.0)
+
+    def test_favorite_bookmarking(self):
+        # Toggle favorite on
+        fav_res = self.client.get(reverse('toggle_favorite', kwargs={'restaurant_id': self.restaurant.id, 'username': self.customer.username}))
+        self.assertEqual(fav_res.status_code, 302)
+        self.assertTrue(Favorite.objects.filter(customer=self.customer, restaurant=self.restaurant).exists())
+
+        # Toggle favorite off
+        fav_res2 = self.client.get(reverse('toggle_favorite', kwargs={'restaurant_id': self.restaurant.id, 'username': self.customer.username}))
+        self.assertEqual(fav_res2.status_code, 302)
+        self.assertFalse(Favorite.objects.filter(customer=self.customer, restaurant=self.restaurant).exists())

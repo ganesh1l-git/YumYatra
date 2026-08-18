@@ -4,58 +4,167 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YumYatra - Restaurants</title>
+    <title>YumYatra - Explore Restaurants</title>
     <link rel="stylesheet" href="{% static 'premium.css' %}">
+    <style>
+        .cuisine-pill {
+            padding: 7px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            -webkit-text-fill-color: initial;
+        }
+        .cuisine-pill:hover, .cuisine-pill.active {
+            background: var(--accent-gradient);
+            color: #ffffff;
+            border-color: transparent;
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+            transform: translateY(-2px);
+        }
+        .search-bar-wrap {
+            max-width: 500px;
+            margin-bottom: 25px;
+        }
+        .search-input {
+            width: 100%;
+            padding: 14px 20px;
+            border-radius: 14px;
+            border: 1px solid var(--glass-border);
+            background: rgba(17, 24, 39, 0.8);
+            color: white;
+            font-size: 0.95rem;
+            font-family: var(--font-body);
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+        .search-input:focus {
+            border-color: var(--accent-color);
+        }
+        .fav-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--glass-border);
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+        .fav-btn:hover {
+            transform: scale(1.15);
+            background: rgba(255, 107, 107, 0.2);
+            border-color: #ff6b6b;
+        }
+    </style>
 </head>
 <body>
     <div class="app-container">
         <!-- Navigation Bar -->
-        <header class="navbar" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 30px;">
-            <div style="display: flex; align-items: center; gap: 30px;">
+        <header class="navbar" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; margin-bottom: 30px; border-bottom: 1px solid var(--glass-border);">
+            <div style="display: flex; align-items: center; gap: 20px;">
                 <div class="navbar-brand" style="margin: 0; padding: 0; background: none;">
-                    <a href="/" style="background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🍕 YumYatra</a>
+                    <a href="{% url 'customer_home' username %}" style="background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 1.8rem; font-family: var(--font-heading); font-weight: 800;">🍕 YumYatra</a>
                 </div>
-                <a href="{% url 'show_cart' username %}" class="btn" style="padding: 10px 24px; font-size: 0.95rem; box-shadow: none; white-space: nowrap;">🛒 View Cart</a>
+                <a href="{% url 'my_orders' username %}" class="btn btn-outline" style="padding: 8px 18px; font-size: 0.85rem;">📦 My Orders</a>
+                <a href="{% url 'show_cart' username %}" class="btn" style="padding: 9px 20px; font-size: 0.85rem; white-space: nowrap; display: flex; align-items: center; gap: 8px;">
+                    <span>🛒 View Cart</span>
+                    {% if cart_count > 0 %}
+                        <span style="background: #ffffff; color: var(--accent-color); font-size: 0.75rem; font-weight: 800; padding: 2px 7px; border-radius: 10px;">{{ cart_count }}</span>
+                    {% endif %}
+                </a>
             </div>
-            <div>
-                <a href="{% url 'open_signin' %}" style="background: transparent; border: 1px solid rgba(255, 255, 255, 0.2); color: #94a3b8; padding: 8px 20px; font-size: 0.9rem; border-radius: 10px; font-weight: 500; text-decoration: none; display: inline-block; -webkit-text-fill-color: #94a3b8; transition: all 0.3s;" onmouseover="this.style.background='rgba(255, 255, 255, 0.05)'; this.style.borderColor='rgba(255, 255, 255, 0.4)'; this.style.color='#f8fafc'; this.style.webkitTextFillColor='#f8fafc';" onmouseout="this.style.background='transparent'; this.style.borderColor='rgba(255, 255, 255, 0.2)'; this.style.color='#94a3b8'; this.style.webkitTextFillColor='#94a3b8';">Logout</a>
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <span style="font-size: 0.9rem; color: var(--text-secondary);">
+                    Hi, <strong style="color: var(--text-primary);">{{ username }}</strong>
+                </span>
+                <a href="{% url 'logout' %}" class="btn btn-outline" style="background: transparent; border: 1px solid rgba(255, 255, 255, 0.2); color: #94a3b8; padding: 8px 18px; font-size: 0.85rem; border-radius: 10px; font-weight: 500; text-decoration: none; display: inline-block; -webkit-text-fill-color: #94a3b8; box-shadow: none;">Logout</a>
             </div>
         </header>
 
+        <!-- Flash Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div style="background: rgba(76, 175, 80, 0.15); border: 1px solid rgba(76, 175, 80, 0.4); color: #a5d6a7; padding: 12px 16px; border-radius: 10px; margin-bottom: 25px;">
+                    ✅ {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
         <!-- Welcome Banner -->
-        <div class="header-welcome">
+        <div class="header-welcome" style="text-align: left; margin-bottom: 25px;">
             <div>
-                <h2>Welcome back, {{ username }}! 👋</h2>
-                <p style="color: var(--text-secondary); margin-top: 5px;">Discover the best food & drinks around you</p>
+                <h2 style="text-align: left; margin: 0 0 6px; font-size: 2.2rem; background: none; -webkit-text-fill-color: initial; color: var(--text-primary);">Hungry, {{ username }}? 🍔</h2>
+                <p style="color: var(--text-secondary); margin-top: 2px; font-size: 1.05rem;">Order from top-rated restaurants with superfast doorstep delivery</p>
             </div>
         </div>
 
-        <!-- Restaurant list (borderless grid) -->
-        <h3 style="text-align: left; font-size: 1.5rem; margin-bottom: 25px; border-bottom: 2px solid var(--glass-border); padding-bottom: 10px; background: none; -webkit-text-fill-color: initial;">Popular Restaurants</h3>
+        <!-- Search Bar & Cuisine Filters -->
+        <div style="margin-bottom: 30px;">
+            <form method="GET" action="{% url 'customer_home' username %}" class="search-bar-wrap" style="padding: 0; background: none; border: none; box-shadow: none; backdrop-filter: none; margin: 0 0 15px 0;">
+                <input type="text" name="q" value="{{ query|default:'' }}" class="search-input" placeholder="Search restaurants by name...">
+            </form>
+
+            <div style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; align-items: center;">
+                <a href="{% url 'customer_home' username %}" class="cuisine-pill {% if not current_cuisine and not filter_mode %}active{% endif %}">
+                    🍽️ All Cuisines
+                </a>
+                <a href="{% url 'customer_home' username %}?filter=favorites" class="cuisine-pill {% if filter_mode == 'favorites' %}active{% endif %}" style="border-color: rgba(255, 107, 107, 0.4);">
+                    ❤️ Favorites ({{ user_fav_ids|length }})
+                </a>
+                {% for c in all_cuisines %}
+                    <a href="{% url 'customer_home' username %}?cuisine={{ c }}" class="cuisine-pill {% if current_cuisine == c %}active{% endif %}">
+                        {{ c }}
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Restaurant list (grid) -->
+        <h3 style="text-align: left; font-size: 1.4rem; margin-bottom: 20px; border-bottom: 1px solid var(--glass-border); padding-bottom: 10px; background: none; -webkit-text-fill-color: initial; color: var(--text-primary);">
+            Popular Restaurants ({{ restaurantList|length }})
+        </h3>
         
-        <div style="display: grid !important; grid-template-columns: repeat(auto-fill, minmax(440px, 1fr)) !important; gap: 30px !important; margin-bottom: 40px !important;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: 24px; margin-bottom: 40px;">
             {% for r in restaurantList %}
-                <div style="display: flex !important; justify-content: space-between !important; align-items: center !important; background: rgba(17, 24, 39, 0.7) !important; backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important; border: 1px solid rgba(255, 255, 255, 0.08) !important; border-radius: 20px !important; padding: 20px !important; margin-bottom: 10px !important;">
-                    <!-- Left: Restaurant name, logo, below that rating and other info -->
-                    <div style="display: flex !important; flex-direction: column !important; gap: 10px !important; align-items: flex-start !important; text-align: left !important;">
-                        <span style="font-family: var(--font-heading); font-size: 1.4rem; font-weight: 700; color: var(--text-primary); text-align: left; display: block;">{{ r.name }}</span>
-                        <div style="display: flex !important; align-items: center !important; gap: 15px !important; text-align: left !important;">
-                            <img src="{{ r.picture }}" style="width: 90px !important; height: 90px !important; border-radius: 12px !important; object-fit: cover !important; border: 1px solid rgba(255, 255, 255, 0.08) !important; flex-shrink: 0 !important;" alt="{{ r.name }}">
-                            <div style="display: flex !important; flex-direction: column !important; gap: 4px !important; font-size: 0.85rem !important; color: var(--text-secondary) !important; text-align: left !important; align-items: flex-start !important;">
-                                <span style="color: var(--text-primary) !important; font-weight: 600 !important;">⭐ {{ r.rating }} Rating</span>
-                                <span>Cuisine: {{ r.cuisine }}</span>
+                <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(17, 24, 39, 0.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 18px; padding: 20px; transition: transform 0.3s, border-color 0.3s;" onmouseover="this.style.borderColor='rgba(255, 107, 107, 0.4)'; this.style.transform='translateY(-2px)';" onmouseout="this.style.borderColor='rgba(255, 255, 255, 0.08)'; this.style.transform='none';">
+                    <div style="display: flex; flex-direction: column; gap: 10px; align-items: flex-start; text-align: left;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-family: var(--font-heading); font-size: 1.3rem; font-weight: 700; color: var(--text-primary); text-align: left;">{{ r.name }}</span>
+                            <a href="{% url 'toggle_favorite' r.id username %}" class="fav-btn" title="Save to Favorites">
+                                {% if r.id in user_fav_ids %}❤️{% else %}🤍{% endif %}
+                            </a>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 15px; text-align: left;">
+                            <img src="{{ r.picture }}" style="width: 80px; height: 80px; border-radius: 12px; object-fit: cover; border: 1px solid rgba(255, 255, 255, 0.08); flex-shrink: 0;" alt="{{ r.name }}">
+                            <div style="display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; color: var(--text-secondary); text-align: left; align-items: flex-start;">
+                                <span style="color: #ffc107; font-weight: 600;">⭐ {{ r.rating }} Rating</span>
+                                <span>🍴 {{ r.cuisine }}</span>
                                 <span>⚡ 25-35 mins delivery</span>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Right: View Restaurant action button -->
-                    <div style="flex-shrink: 0 !important; margin-left: 20px !important;">
-                        <a href="{% url 'view_menu' r.id username %}" class="btn" style="padding: 12px 24px !important; font-size: 0.95rem !important; white-space: nowrap !important;">View Menu</a>
+                    <div style="flex-shrink: 0; margin-left: 15px;">
+                        <a href="{% url 'view_menu' r.id username %}" class="btn" style="padding: 10px 20px; font-size: 0.9rem; white-space: nowrap;">View Menu 🍽️</a>
                     </div>
                 </div>
             {% empty %}
-                <p style="color: var(--text-secondary); text-align: center; padding: 40px 0; grid-column: 1 / -1;">No restaurants found.</p>
+                <div style="color: var(--text-secondary); text-align: center; padding: 50px 0; grid-column: 1 / -1; background: var(--card-bg); border-radius: 16px; border: 1px solid var(--glass-border);">
+                    <div style="font-size: 3rem; margin-bottom: 10px;">🔍</div>
+                    <h4>No restaurants found matching your criteria.</h4>
+                    <p style="margin-top: 5px; font-size: 0.9rem;">Try clearing the search or exploring other cuisines.</p>
+                    <a href="{% url 'customer_home' username %}" class="btn" style="margin-top: 15px; padding: 8px 20px; font-size: 0.85rem;">Show All Restaurants</a>
+                </div>
             {% endfor %}
         </div>
     </div>

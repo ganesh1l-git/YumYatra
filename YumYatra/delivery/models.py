@@ -8,22 +8,32 @@ class Customer(models.Model):
     phone = models.CharField(max_length=10)
     address = models.TextField(max_length=100)
 
+    def __str__(self):
+        return self.username
+
 class Restaurant(models.Model):
-    name = models.CharField(max_length = 20)
-    picture = models.URLField(max_length = 200, default='https://images.venuebookingz.com/22886-1777034898-wm-triple_eight_bar_(9).jpg')
-    cuisine = models.CharField(max_length = 200)
-    rating = models.FloatField()
+    name = models.CharField(max_length=100)
+    password = models.CharField(max_length=128, default='rest123')
+    picture = models.URLField(max_length=400, default='https://images.venuebookingz.com/22886-1777034898-wm-triple_eight_bar_(9).jpg')
+    cuisine = models.CharField(max_length=200)
+    rating = models.FloatField(default=4.0)
+
+    def __str__(self):
+        return self.name
     
 class Item(models.Model):
-    restaurant = models.ForeignKey(Restaurant, on_delete = models.CASCADE, related_name = "items")
-    name = models.CharField(max_length = 20)
-    description = models.CharField(max_length = 200)
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name="items")
+    name = models.CharField(max_length=100)
+    description = models.CharField(max_length=250)
     price = models.FloatField()
     vegetarian = models.BooleanField(default=False)
-    picture = models.URLField(max_length = 400, default='https://www.indiafilings.com/learn/wp-content/uploads/2024/08/How-to-Start-Food-Business.jpg')
+    picture = models.URLField(max_length=400, default='https://www.indiafilings.com/learn/wp-content/uploads/2024/08/How-to-Start-Food-Business.jpg')
+
+    def __str__(self):
+        return f"{self.name} ({self.restaurant.name})"
     
 class Cart(models.Model):
-    customer = models.ForeignKey(Customer, on_delete = models.CASCADE, related_name = "cart")
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="cart")
 
     def total_price(self):
         return sum(ci.item.price * ci.quantity for ci in self.cart_items.all())
@@ -55,9 +65,50 @@ class CartItem(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
 
+class Coupon(models.Model):
+    code = models.CharField(max_length=30, unique=True)
+    description = models.CharField(max_length=150, default='')
+    discount_percent = models.FloatField(default=0.0) # e.g. 50 for 50%
+    flat_discount = models.FloatField(default=0.0)    # e.g. 100 for ₹100
+    min_order_value = models.FloatField(default=0.0)  # e.g. 300 for ₹300 min
+    max_discount = models.FloatField(default=0.0)     # e.g. 120 for ₹120 cap
+    is_free_delivery = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.code
+
+    def calculate_discount(self, subtotal, delivery_fee=35.0):
+        if not self.is_active or subtotal < self.min_order_value:
+            return 0.0
+        
+        discount = 0.0
+        if self.is_free_delivery:
+            discount += delivery_fee
+        elif self.discount_percent > 0:
+            calc = (subtotal * self.discount_percent) / 100.0
+            discount = min(calc, self.max_discount) if self.max_discount > 0 else calc
+        elif self.flat_discount > 0:
+            discount = min(self.flat_discount, subtotal)
+
+        return round(discount, 2)
+
 class Order(models.Model):
+    STATUS_CHOICES = [
+        ('Placed', 'Placed'),
+        ('Confirmed', 'Confirmed'),
+        ('Preparing', 'Preparing'),
+        ('Out for Delivery', 'Out for Delivery'),
+        ('Delivered', 'Delivered'),
+        ('Cancelled', 'Cancelled')
+    ]
+
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="orders")
     created_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=30, choices=STATUS_CHOICES, default='Placed')
+    coupon_code = models.CharField(max_length=50, blank=True, null=True)
+    discount_amount = models.FloatField(default=0.0)
+    estimated_delivery_minutes = models.PositiveIntegerField(default=30)
     subtotal = models.FloatField()
     gst = models.FloatField()
     handling_fee = models.FloatField()
@@ -66,7 +117,7 @@ class Order(models.Model):
     grand_total = models.FloatField()
 
     def __str__(self):
-        return f"Order #{self.id} by {self.customer.username}"
+        return f"Order #{self.id} by {self.customer.username} ({self.status})"
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="order_items")
@@ -77,3 +128,24 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return f"{self.quantity} x {self.item.name} from {self.restaurant.name}"
+
+class Review(models.Model):
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name="reviews")
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="reviews")
+    rating = models.IntegerField(default=5) # 1 to 5
+    comment = models.TextField(max_length=500)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.customer.username} on {self.restaurant.name}: {self.rating}★"
+
+class Favorite(models.Model):
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="favorites")
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name="favorited_by")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('customer', 'restaurant')
+
+    def __str__(self):
+        return f"{self.customer.username} ❤️ {self.restaurant.name}"

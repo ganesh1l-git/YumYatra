@@ -4,45 +4,132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YumYatra - Menu</title>
-    <link class="no-card" rel="stylesheet" href="{% static 'premium.css' %}">
+    <title>YumYatra - {{ restaurant.name }} Menu</title>
+    <link rel="stylesheet" href="{% static 'premium.css' %}">
+    <style>
+        .filter-btn {
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            -webkit-text-fill-color: initial;
+        }
+        .filter-btn.active, .filter-btn:hover {
+            background: var(--accent-gradient);
+            color: #ffffff;
+            border-color: transparent;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+        .review-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        .fav-header-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 8px 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #f8fafc;
+            transition: all 0.2s ease;
+        }
+        .fav-header-btn:hover {
+            background: rgba(255, 107, 107, 0.2);
+            border-color: #ff6b6b;
+        }
+    </style>
 </head>
 <body>
     <div class="app-container">
         <!-- Navigation Bar -->
-        <header class="navbar" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 30px;">
-            <div style="display: flex; align-items: center; gap: 30px;">
+        <header class="navbar" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; margin-bottom: 25px; border-bottom: 1px solid var(--glass-border);">
+            <div style="display: flex; align-items: center; gap: 20px;">
                 <div class="navbar-brand" style="margin: 0; padding: 0; background: none;">
-                    <a href="/" style="background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🍕 YumYatra</a>
+                    <a href="{% url 'customer_home' username %}" style="background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 1.8rem; font-family: var(--font-heading); font-weight: 800;">🍕 YumYatra</a>
                 </div>
-                <a href="{% url 'show_cart' username %}" class="btn" style="padding: 10px 24px; font-size: 0.95rem; box-shadow: none; white-space: nowrap;">🛒 View Cart</a>
+                <a href="{% url 'my_orders' username %}" class="btn btn-outline" style="padding: 8px 16px; font-size: 0.85rem;">📦 My Orders</a>
+                <a href="{% url 'show_cart' username %}" class="btn" style="padding: 9px 20px; font-size: 0.85rem; white-space: nowrap; display: flex; align-items: center; gap: 8px;">
+                    <span>🛒 View Cart</span>
+                    {% if cart_count > 0 %}
+                        <span style="background: #ffffff; color: var(--accent-color); font-size: 0.75rem; font-weight: 800; padding: 2px 7px; border-radius: 10px;">{{ cart_count }}</span>
+                    {% endif %}
+                </a>
             </div>
             <div style="display: flex; align-items: center; gap: 20px;">
                 <div style="font-size: 0.9rem; color: #94a3b8;">
-                    Logged in as: <strong style="color: #f8fafc;">{{ username }}</strong>
+                    Hi, <strong style="color: #f8fafc;">{{ username }}</strong>
                 </div>
-                <a href="javascript:history.back()" style="background: transparent; border: 1px solid rgba(255, 255, 255, 0.2); color: #94a3b8; padding: 8px 20px; font-size: 0.9rem; border-radius: 10px; font-weight: 500; text-decoration: none; display: inline-block; -webkit-text-fill-color: #94a3b8; white-space: nowrap; transition: all 0.3s;" onmouseover="this.style.background='rgba(255, 255, 255, 0.05)'; this.style.borderColor='rgba(255, 255, 255, 0.4)'; this.style.color='#f8fafc'; this.style.webkitTextFillColor='#f8fafc';" onmouseout="this.style.background='transparent'; this.style.borderColor='rgba(255, 255, 255, 0.2)'; this.style.color='#94a3b8'; this.style.webkitTextFillColor='#94a3b8';">⬅️ Restaurants</a>
+                <a href="{% url 'customer_home' username %}" style="background: transparent; border: 1px solid rgba(255, 255, 255, 0.2); color: #94a3b8; padding: 8px 18px; font-size: 0.85rem; border-radius: 10px; font-weight: 500; text-decoration: none; display: inline-block; -webkit-text-fill-color: #94a3b8; white-space: nowrap;">⬅️ All Restaurants</a>
             </div>
         </header>
 
+        <!-- Flash Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div style="background: rgba(76, 175, 80, 0.15); border: 1px solid rgba(76, 175, 80, 0.4); color: #a5d6a7; padding: 12px 16px; border-radius: 10px; margin-bottom: 25px;">
+                    ✅ {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
         <!-- Restaurant Title & Welcome -->
-        <div class="header-welcome" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 20px; margin-bottom: 30px;">
-            <div>
-                <h2 style="margin: 0; font-size: 1.8rem; background: none; -webkit-text-fill-color: initial; color: #f8fafc;">{{ restaurant.name }} Menu 🍽️</h2>
-                <p style="color: #94a3b8; margin: 5px 0 0 0; font-size: 1rem;">{{ restaurant.cuisine }}</p>
+        <div class="card" style="display: flex; justify-content: space-between; align-items: center; padding: 25px; margin-bottom: 30px; flex-wrap: wrap; gap: 20px;">
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <img src="{{ restaurant.picture }}" style="width: 85px; height: 85px; border-radius: 14px; object-fit: cover; border: 1px solid var(--glass-border);" alt="{{ restaurant.name }}">
+                <div>
+                    <h2 style="margin: 0; font-size: 1.8rem; background: none; -webkit-text-fill-color: initial; color: #f8fafc; text-align: left;">{{ restaurant.name }} 🍽️</h2>
+                    <p style="color: #94a3b8; margin: 4px 0 0 0; font-size: 0.95rem;">{{ restaurant.cuisine }} • Fast Delivery in 25-35 mins</p>
+                </div>
             </div>
-            <div style="text-align: right;">
-                <span style="background: rgba(255, 193, 7, 0.15); border: 1px solid rgba(255, 193, 7, 0.3); color: #ffc107; padding: 8px 16px; border-radius: 20px; font-size: 1.05rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
-                    ⭐ {{ restaurant.rating }} Rating
+            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                <a href="{% url 'toggle_favorite' restaurant.id username %}" class="fav-header-btn">
+                    {% if is_favorited %}❤️ Saved to Favorites{% else %}🤍 Add to Favorites{% endif %}
+                </a>
+                <span style="background: rgba(255, 193, 7, 0.15); border: 1px solid rgba(255, 193, 7, 0.3); color: #ffc107; padding: 8px 16px; border-radius: 20px; font-size: 1rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                    ⭐ {{ restaurant.rating }} ({{ reviews|length }} reviews)
                 </span>
             </div>
         </div>
 
+        <!-- Filter Controls -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;">
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <a href="{% url 'view_menu' restaurant.id username %}?filter=all{% if search_item %}&search={{ search_item }}{% endif %}" class="filter-btn {% if current_filter == 'all' or not current_filter %}active{% endif %}">
+                    All Dishes ({{ restaurant.items.count }})
+                </a>
+                <a href="{% url 'view_menu' restaurant.id username %}?filter=veg{% if search_item %}&search={{ search_item }}{% endif %}" class="filter-btn {% if current_filter == 'veg' %}active{% endif %}">
+                    🟢 Pure Veg
+                </a>
+                <a href="{% url 'view_menu' restaurant.id username %}?filter=nonveg{% if search_item %}&search={{ search_item }}{% endif %}" class="filter-btn {% if current_filter == 'nonveg' %}active{% endif %}">
+                    🔴 Non-Veg
+                </a>
+            </div>
+
+            <form method="GET" action="{% url 'view_menu' restaurant.id username %}" style="padding: 0; margin: 0; background: none; border: none; box-shadow: none; backdrop-filter: none;">
+                {% if current_filter %}<input type="hidden" name="filter" value="{{ current_filter }}">{% endif %}
+                <input type="text" name="search" value="{{ search_item|default:'' }}" placeholder="Search in menu..." style="padding: 8px 16px; border-radius: 10px; border: 1px solid var(--glass-border); background: rgba(255, 255, 255, 0.04); color: white; font-size: 0.85rem;">
+            </form>
+        </div>
+
         <!-- Menu items (horizontal row cards) -->
-        <div class="row-list">
+        <div class="row-list" style="margin-bottom: 40px;">
             {% for item in itemList %}
                 <div class="row-card">
-                    <!-- Left: Food Item Icon (All aligned to same size) -->
+                    <!-- Left: Food Item Icon -->
                     <div class="row-icon-wrapper">
                         <img src="{{ item.picture }}" alt="{{ item.name }}">
                     </div>
@@ -71,19 +158,111 @@
                                 <label for="qty-{{ item.id }}" style="margin: 0; font-size: 0.8rem;">Qty:</label>
                                 <input type="number" id="qty-{{ item.id }}" class="quantity-input" value="1" min="1" max="25">
                             </div>
-                            <a href="#" onclick="addToCart(event, '{{ item.id }}', '{{ username }}')" class="btn" style="padding: 10px 20px; font-size: 0.9rem; white-space: nowrap;">Add to Cart</a>
+                            <button type="button" onclick="addToCart('{{ item.id }}', '{{ username }}')" class="btn" style="padding: 10px 20px; font-size: 0.9rem; white-space: nowrap;">+ Add to Cart</button>
                         </div>
                     </div>
                 </div>
             {% empty %}
-                <p style="color: var(--text-secondary); text-align: center; padding: 40px 0;">No items available in the menu.</p>
+                <div style="text-align: center; padding: 40px 0; color: var(--text-secondary); background: var(--card-bg); border-radius: 16px; border: 1px solid var(--glass-border);">
+                    <p style="margin-bottom: 10px;">No dishes matching your filter.</p>
+                    <a href="{% url 'view_menu' restaurant.id username %}" class="btn" style="padding: 8px 18px; font-size: 0.85rem;">View Full Menu</a>
+                </div>
             {% endfor %}
+        </div>
+
+        <!-- Customer Reviews & Ratings Section -->
+        <div class="card" style="padding: 30px; margin-bottom: 30px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--glass-border); padding-bottom: 12px; flex-wrap: wrap; gap: 10px;">
+                <div>
+                    <h3 style="margin: 0 0 4px; font-size: 1.3rem; color: #f8fafc;">💬 Customer Reviews & Ratings</h3>
+                    <p style="color: #94a3b8; font-size: 0.85rem; margin: 0;">Verified reviews from food lovers</p>
+                </div>
+                <div style="font-size: 1.1rem; color: #ffc107; font-weight: 700;">
+                    Overall: ⭐ {{ restaurant.rating }} / 5.0
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; margin-bottom: 25px;">
+                <!-- Review Form or Restriction Card -->
+                <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--glass-border); border-radius: 14px; padding: 20px;">
+                    {% if can_review %}
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                            <h4 style="margin: 0; color: #f8fafc; font-size: 1rem;">✍️ Leave a Verified Review</h4>
+                            <span style="background: rgba(76, 175, 80, 0.15); border: 1px solid rgba(76, 175, 80, 0.4); color: #a5d6a7; padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 700;">
+                                ✅ Verified Buyer
+                            </span>
+                        </div>
+                        <form method="POST" action="{% url 'add_review' restaurant.id username %}" style="margin: 0; padding: 0; background: none; border: none; box-shadow: none;">
+                            {% csrf_token %}
+                            <div style="margin-bottom: 12px;">
+                                <label style="display: block; font-size: 0.85rem; color: #94a3b8; margin-bottom: 6px;">Your Rating:</label>
+                                <select name="rating" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: #111827; color: white;">
+                                    <option value="5" {% if user_review.rating == 5 %}selected{% endif %}>⭐⭐⭐⭐⭐ (5 - Exceptional)</option>
+                                    <option value="4" {% if user_review.rating == 4 %}selected{% endif %}>⭐⭐⭐⭐ (4 - Great)</option>
+                                    <option value="3" {% if user_review.rating == 3 %}selected{% endif %}>⭐⭐⭐ (3 - Good)</option>
+                                    <option value="2" {% if user_review.rating == 2 %}selected{% endif %}>⭐⭐ (2 - Fair)</option>
+                                    <option value="1" {% if user_review.rating == 1 %}selected{% endif %}>⭐ (1 - Needs Improvement)</option>
+                                </select>
+                            </div>
+                            <div style="margin-bottom: 15px;">
+                                <label style="display: block; font-size: 0.85rem; color: #94a3b8; margin-bottom: 6px;">Your Feedback:</label>
+                                <textarea name="comment" rows="3" placeholder="How was the food, freshness, and packaging?" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.3); color: white; font-size: 0.85rem;">{{ user_review.comment|default:'' }}</textarea>
+                            </div>
+                            <button type="submit" class="btn" style="width: 100%; padding: 10px; font-size: 0.9rem;">
+                                {% if user_review %}Update Your Review ⭐{% else %}Submit Verified Review ⭐{% endif %}
+                            </button>
+                        </form>
+                    {% elif has_pending_order %}
+                        <div style="text-align: center; padding: 25px 15px;">
+                            <div style="font-size: 2.2rem; margin-bottom: 10px;">🛵</div>
+                            <h4 style="margin: 0 0 8px; color: #f8fafc; font-size: 1.05rem;">Order In Progress!</h4>
+                            <p style="color: #94a3b8; font-size: 0.85rem; line-height: 1.5; margin: 0 0 15px;">
+                                You have an active order from <strong>{{ restaurant.name }}</strong>. You can leave a review as soon as your meal is delivered!
+                            </p>
+                            <a href="{% url 'my_orders' username %}" class="btn btn-outline" style="padding: 8px 18px; font-size: 0.8rem; text-decoration: none; border-radius: 8px;">
+                                📦 Track Your Order
+                            </a>
+                        </div>
+                    {% else %}
+                        <div style="text-align: center; padding: 25px 15px;">
+                            <div style="font-size: 2.2rem; margin-bottom: 10px;">🔒</div>
+                            <h4 style="margin: 0 0 8px; color: #f8fafc; font-size: 1.05rem;">Verified Reviews Only</h4>
+                            <p style="color: #94a3b8; font-size: 0.85rem; line-height: 1.5; margin: 0;">
+                                To keep reviews honest and authentic, only customers who have ordered and received a delivered meal from <strong>{{ restaurant.name }}</strong> can leave a review.
+                            </p>
+                            <div style="margin-top: 15px; font-size: 0.8rem; color: #ff8a80;">
+                                💡 Order any dish from the menu above to unlock reviews!
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Existing Reviews List -->
+                <div>
+                    <h4 style="margin: 0 0 12px; color: #f8fafc; font-size: 1rem;">Recent Customer Feedback</h4>
+                    {% if reviews %}
+                        {% for rev in reviews %}
+                            <div class="review-card">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                    <strong style="color: #f8fafc; font-size: 0.9rem;">👤 {{ rev.customer.username }}</strong>
+                                    <span style="color: #ffc107; font-size: 0.85rem; font-weight: 600;">
+                                        {% if rev.rating == 5 %}⭐⭐⭐⭐⭐{% elif rev.rating == 4 %}⭐⭐⭐⭐{% elif rev.rating == 3 %}⭐⭐⭐{% elif rev.rating == 2 %}⭐⭐{% else %}⭐{% endif %}
+                                    </span>
+                                </div>
+                                <p style="color: #cbd5e1; font-size: 0.85rem; margin: 0 0 4px; line-height: 1.4;">"{{ rev.comment }}"</p>
+                                <div style="font-size: 0.75rem; color: #64748b;">{{ rev.created_at|date:"M d, Y" }}</div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p style="color: #94a3b8; font-size: 0.9rem; font-style: italic;">No reviews yet for this restaurant. Be the first to share your experience!</p>
+                    {% endif %}
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        function addToCart(event, itemId, username) {
-            event.preventDefault();
+        function addToCart(itemId, username) {
             const qtyInput = document.getElementById('qty-' + itemId);
             const quantity = qtyInput ? qtyInput.value : 1;
             window.location.href = `/add_to_cart/${itemId}/${username}?quantity=${quantity}`;

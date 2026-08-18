@@ -4,53 +4,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YumYatra - Checkout</title>
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <title>YumYatra - Secure Checkout</title>
+    {% if razorpay_ready %}
+        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    {% endif %}
     <link rel="stylesheet" href="{% static 'premium.css' %}">
 </head>
 <body>
     <div class="app-container">
         <!-- Navigation Bar -->
-        <header class="navbar">
+        <header class="navbar" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; margin-bottom: 30px; border-bottom: 1px solid var(--glass-border);">
             <div class="navbar-brand">
-                <a href="/" style="background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🍕 YumYatra</a>
+                <a href="{% url 'customer_home' username %}" style="background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🍕 YumYatra</a>
             </div>
-            <nav class="navbar-links">
-                <a href="javascript:history.back()">⬅️ Back to Cart</a>
-            </nav>
+            <div style="display: flex; gap: 12px; align-items: center;">
+                <a href="{% url 'show_cart' username %}" class="btn btn-outline" style="padding: 8px 18px; font-size: 0.85rem; border: 1px solid var(--text-secondary); color: var(--text-secondary); -webkit-text-fill-color: var(--text-secondary); text-decoration: none; border-radius: 10px;">⬅️ Back to Cart</a>
+            </div>
         </header>
 
         <!-- Checkout Header -->
-        <div class="header-welcome">
+        <div class="header-welcome" style="margin-bottom: 25px;">
             <div>
                 <h2>Secure Checkout 🔒</h2>
-                <p style="color: var(--text-secondary); margin-top: 5px;">Review order details and complete payment</p>
+                <p style="color: var(--text-secondary); margin-top: 5px;">Review your bill and select your preferred payment method</p>
             </div>
         </div>
 
-        <div class="card" style="max-width: 600px; padding: 30px;">
-            <h3 style="text-align: left; font-size: 1.3rem; margin-bottom: 20px; border-bottom: 1px solid var(--glass-border); padding-bottom: 10px; background: none; -webkit-text-fill-color: initial;">Order Summary</h3>
+        <div class="card" style="max-width: 620px; padding: 30px; margin: 0 auto;">
+            <h3 style="text-align: left; font-size: 1.25rem; margin-bottom: 20px; border-bottom: 1px solid var(--glass-border); padding-bottom: 10px; background: none; -webkit-text-fill-color: initial; color: var(--text-primary);">Order Items Summary</h3>
             
             {% if error %}
-                <div style="background: rgba(224, 49, 49, 0.1); border: 1px solid rgba(224, 49, 49, 0.3); padding: 15px; border-radius: 12px; margin-bottom: 20px; color: #ff8787; text-align: center;">
+                <div style="background: rgba(224, 49, 49, 0.12); border: 1px solid rgba(224, 49, 49, 0.35); padding: 16px; border-radius: 12px; margin-bottom: 20px; color: #ff8787; text-align: center;">
                     ⚠️ {{ error }}
                 </div>
-                <div class="flex justify-center">
-                    <a href="javascript:history.back()" class="btn logout-btn">Go Back</a>
+                <div style="text-align: center; margin-top: 15px;">
+                    <a href="{% url 'customer_home' username %}" class="btn">Explore Restaurants</a>
                 </div>
             {% else %}
-                <table class="no-card" style="margin-bottom: 25px;">
+                <table class="no-card" style="margin-bottom: 20px; width: 100%; border-collapse: collapse;">
                     <thead>
-                        <tr>
-                            <th>Item</th>
-                            <th style="text-align: right;">Price</th>
+                        <tr style="border-bottom: 1px solid var(--glass-border); font-size: 0.85rem; color: var(--text-secondary);">
+                            <th style="text-align: left; padding: 8px 0;">Item Name</th>
+                            <th style="text-align: right; padding: 8px 0;">Price</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for cart_item in cart_items %}
-                        <tr>
-                            <td>{{ cart_item.item.name }} <span style="color: var(--text-secondary); font-size: 0.85rem;">(x{{ cart_item.quantity }})</span></td>
-                            <td style="text-align: right; color: var(--text-primary);">₹{{ cart_item.item.price }}</td>
+                        <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.04); font-size: 0.95rem;">
+                            <td style="padding: 10px 0; color: var(--text-primary);">
+                                {{ cart_item.item.name }} <span style="color: var(--text-secondary); font-size: 0.85rem;">(x{{ cart_item.quantity }})</span>
+                            </td>
+                            <td style="text-align: right; color: var(--text-primary); font-weight: 500;">₹{{ cart_item.item.price }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -59,53 +63,72 @@
                 <div style="margin-bottom: 25px; padding-top: 15px; border-top: 1px solid var(--glass-border);">
                     <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.95rem;">
                         <span style="color: var(--text-secondary);">Subtotal:</span>
-                        <span style="color: var(--text-primary);">₹{{ subtotal }}</span>
+                        <span style="color: var(--text-primary); font-weight: 500;">₹{{ subtotal }}</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.95rem;">
                         <span style="color: var(--text-secondary);">GST (5%):</span>
-                        <span style="color: var(--text-primary);">₹{{ gst }}</span>
+                        <span style="color: var(--text-primary); font-weight: 500;">₹{{ gst }}</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.95rem;">
                         <span style="color: var(--text-secondary);">Restaurant Handling Fee:</span>
-                        <span style="color: var(--text-primary);">₹{{ handling_fee }}</span>
+                        <span style="color: var(--text-primary); font-weight: 500;">₹{{ handling_fee }}</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.95rem;">
                         <span style="color: var(--text-secondary);">Delivery Fee:</span>
                         {% if delivery_fee == 0.0 %}
                             <span style="color: #4caf50; font-weight: 600;">FREE</span>
                         {% else %}
-                            <span style="color: var(--text-primary);">₹{{ delivery_fee }}</span>
+                            <span style="color: var(--text-primary); font-weight: 500;">₹{{ delivery_fee }}</span>
                         {% endif %}
                     </div>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 0.95rem;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 0.95rem;">
                         <span style="color: var(--text-secondary);">Services Fee:</span>
-                        <span style="color: var(--text-primary);">₹{{ service_fee }}</span>
+                        <span style="color: var(--text-primary); font-weight: 500;">₹{{ service_fee }}</span>
                     </div>
                     
-                    <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--glass-border); padding-top: 15px; margin-bottom: 30px;">
+                    {% if discount_amount > 0 %}
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 0.95rem; color: #4caf50; font-weight: 600;">
+                            <span>Coupon Discount ({{ applied_coupon.code }}):</span>
+                            <span>-₹{{ discount_amount }}</span>
+                        </div>
+                    {% endif %}
+
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--glass-border); padding-top: 15px; margin-bottom: 25px;">
                         <span style="font-size: 1.1rem; color: var(--text-secondary);">Grand Total:</span>
                         <strong style="font-size: 1.6rem; color: var(--accent-color);">₹{{ grand_total }}</strong>
                     </div>
                 </div>
 
-                <div class="flex justify-center">
-                    <button id="rzp-button" style="width: 100%; padding: 16px; font-size: 1.1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">
-                        💳 Pay ₹{{ grand_total }} via Razorpay
-                    </button>
+                {% if gateway_warning %}
+                    <div style="background: rgba(255, 193, 7, 0.1); border: 1px solid rgba(255, 193, 7, 0.3); border-radius: 10px; padding: 12px; margin-bottom: 20px; font-size: 0.85rem; color: #ffca28; text-align: center;">
+                        ℹ️ {{ gateway_warning }}
+                    </div>
+                {% endif %}
+
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    {% if razorpay_ready %}
+                        <button id="rzp-button" style="width: 100%; padding: 15px; font-size: 1.05rem; font-weight: 700; text-transform: uppercase;">
+                            💳 Pay ₹{{ grand_total }} via Razorpay
+                        </button>
+                    {% endif %}
+                    
+                    <a href="{% url 'direct_order' username %}" class="btn" style="width: 100%; padding: 14px; font-size: 1rem; font-weight: 600; text-decoration: none; text-align: center; background: linear-gradient(135deg, #10b981 0%, #059669 100%); box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);">
+                        🚚 Place Order (Cash on Delivery / Instant Demo)
+                    </a>
                 </div>
             {% endif %}
         </div>
     </div>
 
-    {% if not error %}
+    {% if razorpay_ready and not error %}
     <script>
         var options = {
-            "key": "{{ razorpay_key_id }}",  // Razorpay API key from context
-            "amount": "{{ amount_paise }}",   // Amount in paise from context
+            "key": "{{ razorpay_key_id }}",
+            "amount": "{{ amount_paise }}",
             "currency": "INR",
             "name": "YumYatra",
-            "description": "Order Payment",
-            "order_id": "{{ order_id }}",     // Razorpay order ID from context
+            "description": "Food Delivery Order Payment",
+            "order_id": "{{ order_id }}",
             "handler": function (response) {
                 alert("🎉 Payment Successful!");
                 window.location.href = "{% url 'orders' username %}";
@@ -121,9 +144,12 @@
         };
         var rzp = new Razorpay(options);
     
-        document.getElementById('rzp-button').onclick = function(e) {
-            rzp.open();
-            e.preventDefault();
+        const btn = document.getElementById('rzp-button');
+        if (btn) {
+            btn.onclick = function(e) {
+                rzp.open();
+                e.preventDefault();
+            }
         }
     </script>
     {% endif %}

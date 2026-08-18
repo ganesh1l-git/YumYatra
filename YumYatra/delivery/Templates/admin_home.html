@@ -12,15 +12,24 @@
         <!-- Navigation Bar -->
         <header class="navbar" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; margin-bottom: 40px; border-bottom: 1px solid var(--glass-border);">
             <div class="navbar-brand" style="margin: 0; padding: 0; background: none;">
-                <a href="/" style="background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 1.8rem; font-family: var(--font-heading); font-weight: 800;">🍕 YumYatra Admin</a>
+                <a href="{% url 'admin_home' %}" style="background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 1.8rem; font-family: var(--font-heading); font-weight: 800;">🍕 YumYatra Admin</a>
             </div>
             <div style="display: flex; align-items: center; gap: 20px;">
                 <div style="font-size: 0.9rem; color: var(--text-secondary);">
-                    Logged in as: <strong style="color: var(--text-primary);">admin</strong>
+                    Logged in as: <strong style="color: var(--text-primary);">admin</strong> (Administrator)
                 </div>
-                <a href="{% url 'open_signin' %}" class="btn btn-outline" style="padding: 8px 20px; font-size: 0.9rem; border: 1px solid rgba(224, 49, 49, 0.4); background: rgba(224, 49, 49, 0.08); color: #ff6b6b; -webkit-text-fill-color: #ff6b6b; border-radius: 10px; box-shadow: none;">🚪 Logout</a>
+                <a href="{% url 'logout' %}" class="btn btn-outline" style="padding: 8px 20px; font-size: 0.9rem; border: 1px solid rgba(224, 49, 49, 0.4); background: rgba(224, 49, 49, 0.08); color: #ff6b6b; -webkit-text-fill-color: #ff6b6b; border-radius: 10px; box-shadow: none;">🚪 Logout</a>
             </div>
         </header>
+
+        <!-- Flash Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div style="background: rgba(76, 175, 80, 0.15); border: 1px solid rgba(76, 175, 80, 0.4); color: #a5d6a7; padding: 12px 16px; border-radius: 10px; margin-bottom: 25px;">
+                    ✅ {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
 
         <!-- Welcome & Description -->
         <div class="header-welcome" style="margin-bottom: 40px; text-align: left;">

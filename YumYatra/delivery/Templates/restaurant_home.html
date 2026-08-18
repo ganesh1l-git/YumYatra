@@ -1,0 +1,225 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YumYatra - Restaurant Portal</title>
+    <link rel="stylesheet" href="{% static 'premium.css' %}">
+    <style>
+        .status-action-btn {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+        .btn-confirm { background: rgba(156, 39, 176, 0.2); color: #ce93d8; border-color: rgba(156, 39, 176, 0.4); }
+        .btn-cooking { background: rgba(255, 152, 0, 0.2); color: #ffb74d; border-color: rgba(255, 152, 0, 0.4); }
+        .btn-dispatch { background: rgba(255, 107, 107, 0.2); color: #ff8a80; border-color: rgba(255, 107, 107, 0.4); }
+        .btn-deliver { background: rgba(76, 175, 80, 0.2); color: #a5d6a7; border-color: rgba(76, 175, 80, 0.4); }
+        
+        .status-action-btn:hover {
+            transform: scale(1.05);
+            filter: brightness(1.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container" style="max-width: 1100px; margin: 0 auto;">
+        <!-- Navigation Bar -->
+        <header class="navbar" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; margin-bottom: 35px; border-bottom: 1px solid var(--glass-border);">
+            <div class="navbar-brand" style="margin: 0; padding: 0; background: none; display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 1.8rem;">🏪</span>
+                <span style="background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 1.6rem; font-family: var(--font-heading); font-weight: 800;">{{ restaurant.name }}</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <span style="font-size: 0.9rem; color: var(--text-secondary);">
+                    Role: <strong style="color: #ffc107;">Restaurant Partner</strong>
+                </span>
+                <a href="{% url 'logout' %}" class="btn btn-outline" style="padding: 8px 18px; font-size: 0.85rem; border: 1px solid rgba(224, 49, 49, 0.4); background: rgba(224, 49, 49, 0.08); color: #ff6b6b; -webkit-text-fill-color: #ff6b6b; border-radius: 10px; box-shadow: none;">🚪 Logout</a>
+            </div>
+        </header>
+
+        <!-- Flash Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div style="background: rgba(76, 175, 80, 0.15); border: 1px solid rgba(76, 175, 80, 0.4); color: #a5d6a7; padding: 12px 16px; border-radius: 10px; margin-bottom: 25px;">
+                    ✅ {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Restaurant Welcome Banner -->
+        <div class="card" style="margin-bottom: 30px; padding: 25px; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <img src="{{ restaurant.picture }}" style="width: 85px; height: 85px; border-radius: 16px; object-fit: cover; border: 2px solid var(--glass-border);" alt="{{ restaurant.name }}">
+                <div>
+                    <h2 style="text-align: left; margin: 0 0 6px; font-size: 1.8rem; color: var(--text-primary); background: none; -webkit-text-fill-color: initial;">{{ restaurant.name }}</h2>
+                    <div style="display: flex; align-items: center; gap: 12px; font-size: 0.9rem; color: var(--text-secondary);">
+                        <span>🍴 {{ restaurant.cuisine }}</span>
+                        <span>•</span>
+                        <span style="color: #ffc107; font-weight: 600;">⭐ {{ restaurant.rating }} Rating</span>
+                    </div>
+                </div>
+            </div>
+            <div style="display: flex; gap: 15px;">
+                <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--glass-border); padding: 12px 20px; border-radius: 12px; text-align: center;">
+                    <div style="font-size: 0.8rem; color: var(--text-secondary);">Orders Today</div>
+                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary);">{{ order_count }}</div>
+                </div>
+                <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--glass-border); padding: 12px 20px; border-radius: 12px; text-align: center;">
+                    <div style="font-size: 0.8rem; color: var(--text-secondary);">Revenue Today</div>
+                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--accent-color);">₹{{ sales_value }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Kitchen Order Status Pipeline Management -->
+        <div class="card" style="max-width: 100%; padding: 25px; margin-bottom: 35px;">
+            <h3 style="text-align: left; font-size: 1.25rem; margin-bottom: 20px; color: var(--text-primary); background: none; -webkit-text-fill-color: initial; border-bottom: 1px solid var(--glass-border); padding-bottom: 10px;">
+                ⚡ Live Kitchen Orders & Status Pipeline
+            </h3>
+            
+            <table class="no-card" style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="border-bottom: 1px solid var(--glass-border); font-size: 0.85rem; color: var(--text-secondary);">
+                        <th style="text-align: left; padding: 10px 8px;">Order</th>
+                        <th style="text-align: left; padding: 10px 8px;">Customer</th>
+                        <th style="text-align: left; padding: 10px 8px;">Items</th>
+                        <th style="text-align: center; padding: 10px 8px;">Current Status</th>
+                        <th style="text-align: right; padding: 10px 8px;">Advance Status Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ord in restaurant_orders %}
+                        <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.04); font-size: 0.9rem;">
+                            <td style="padding: 12px 8px; font-weight: 700; color: #f8fafc;">
+                                #{{ ord.id }}
+                                <div style="font-size: 0.75rem; color: #94a3b8; font-weight: 400;">{{ ord.created_at|date:"h:i A" }}</div>
+                            </td>
+                            <td style="padding: 12px 8px; color: #cbd5e1;">
+                                {{ ord.customer.username }}
+                                <div style="font-size: 0.75rem; color: #94a3b8;">{{ ord.customer.phone }}</div>
+                            </td>
+                            <td style="padding: 12px 8px; color: #f8fafc;">
+                                {% for oi in ord.order_items.all %}
+                                    {% if oi.restaurant == restaurant %}
+                                        <div>• {{ oi.quantity }}x {{ oi.item.name }}</div>
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td style="text-align: center; padding: 12px 8px;">
+                                <span style="background: rgba(255, 107, 107, 0.15); border: 1px solid rgba(255, 107, 107, 0.4); color: #ff8a80; padding: 4px 10px; border-radius: 12px; font-size: 0.8rem; font-weight: 700;">
+                                    {{ ord.status }}
+                                </span>
+                            </td>
+                            <td style="text-align: right; padding: 12px 8px;">
+                                <div style="display: flex; justify-content: flex-end; gap: 6px; flex-wrap: wrap;">
+                                    {% if ord.status == 'Placed' %}
+                                        <a href="{% url 'update_order_status' ord.id %}?status=Confirmed" class="status-action-btn btn-confirm">✅ Accept Order</a>
+                                    {% elif ord.status == 'Confirmed' %}
+                                        <a href="{% url 'update_order_status' ord.id %}?status=Preparing" class="status-action-btn btn-cooking">🍳 Start Cooking</a>
+                                    {% elif ord.status == 'Preparing' %}
+                                        <a href="{% url 'update_order_status' ord.id %}?status=Out for Delivery" class="status-action-btn btn-dispatch">🛵 Dispatch Delivery</a>
+                                    {% elif ord.status == 'Out for Delivery' %}
+                                        <a href="{% url 'update_order_status' ord.id %}?status=Delivered" class="status-action-btn btn-deliver">🎉 Mark Delivered</a>
+                                    {% else %}
+                                        <span style="color: #4caf50; font-size: 0.8rem; font-weight: 600;">Completed</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: var(--text-secondary); padding: 30px 0;">
+                                No recent orders for kitchen management.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Menu Management Section -->
+        <div style="display: grid; grid-template-columns: 1.1fr 1.3fr; gap: 30px; align-items: start; margin-bottom: 40px;">
+            <!-- Left: Add New Dish Form -->
+            <div class="card" style="margin: 0; padding: 25px;">
+                <h3 style="text-align: left; font-size: 1.25rem; margin-bottom: 20px; color: var(--text-primary); background: none; -webkit-text-fill-color: initial; border-bottom: 1px solid var(--glass-border); padding-bottom: 10px;">
+                    ✨ Add New Dish to Menu
+                </h3>
+                <form action="{% url 'update_menu' restaurant.id %}" method="POST" class="no-card" style="margin: 0; padding: 0; border: none; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none;">
+                    {% csrf_token %}
+                    <div style="margin-bottom: 14px;">
+                        <label for="dish_name" style="display: block; margin-bottom: 6px; font-size: 0.85rem; color: var(--text-secondary);">Dish Name</label>
+                        <input type="text" id="dish_name" name="name" placeholder="e.g., Paneer Butter Masala" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(255, 255, 255, 0.03); color: white;">
+                    </div>
+
+                    <div style="margin-bottom: 14px;">
+                        <label for="dish_desc" style="display: block; margin-bottom: 6px; font-size: 0.85rem; color: var(--text-secondary);">Description</label>
+                        <textarea id="dish_desc" name="description" placeholder="Ingredients, flavor notes, portion size..." required rows="2" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(255, 255, 255, 0.03); color: white; resize: vertical; font-family: var(--font-body);"></textarea>
+                    </div>
+
+                    <div style="margin-bottom: 14px;">
+                        <label for="dish_price" style="display: block; margin-bottom: 6px; font-size: 0.85rem; color: var(--text-secondary);">Price (₹)</label>
+                        <input type="number" id="dish_price" name="price" step="0.01" min="1" placeholder="250.00" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(255, 255, 255, 0.03); color: white;">
+                    </div>
+
+                    <div style="margin-bottom: 14px;">
+                        <label for="dish_pic" style="display: block; margin-bottom: 6px; font-size: 0.85rem; color: var(--text-secondary);">Photo URL (optional)</label>
+                        <input type="url" id="dish_pic" name="picture" placeholder="https://..." style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(255, 255, 255, 0.03); color: white;">
+                    </div>
+
+                    <div style="margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                        <input type="checkbox" id="vegetarian" name="vegetarian" style="width: 18px; height: 18px; cursor: pointer;">
+                        <label for="vegetarian" style="margin: 0; font-size: 0.9rem; color: var(--text-primary); cursor: pointer;">🟢 This dish is Vegetarian</label>
+                    </div>
+
+                    <button type="submit" style="width: 100%; padding: 12px; font-size: 0.95rem;">+ Add Dish to Menu</button>
+                </form>
+            </div>
+
+            <!-- Right: Current Offerings -->
+            <div class="card" style="margin: 0; padding: 25px; max-height: 650px; overflow-y: auto;">
+                <h3 style="text-align: left; font-size: 1.25rem; margin-bottom: 20px; color: var(--text-primary); background: none; -webkit-text-fill-color: initial; border-bottom: 1px solid var(--glass-border); padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+                    <span>🍽️ Active Menu Items</span>
+                    <span style="font-size: 0.85rem; color: var(--text-secondary); background: var(--item-bg); padding: 4px 10px; border-radius: 12px;">{{ items|length }} Items</span>
+                </h3>
+                
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    {% for item in items %}
+                        <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--glass-border); border-radius: 12px; padding: 12px 14px;">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <img src="{{ item.picture }}" style="width: 48px; height: 48px; border-radius: 8px; object-fit: cover; border: 1px solid var(--glass-border);" alt="{{ item.name }}">
+                                <div>
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <strong style="color: var(--text-primary); font-size: 0.95rem;">{{ item.name }}</strong>
+                                        {% if item.vegetarian %}
+                                            <span style="font-size: 0.65rem; color: #4caf50; background: rgba(76, 175, 80, 0.1); border: 1px solid rgba(76, 175, 80, 0.3); padding: 2px 6px; border-radius: 4px; font-weight: 600;">VEG</span>
+                                        {% else %}
+                                            <span style="font-size: 0.65rem; color: #f44336; background: rgba(244, 67, 54, 0.1); border: 1px solid rgba(244, 67, 54, 0.3); padding: 2px 6px; border-radius: 4px; font-weight: 600;">NON-VEG</span>
+                                        {% endif %}
+                                    </div>
+                                    <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 2px; max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ item.description }}</div>
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 15px;">
+                                <span style="font-weight: 700; color: var(--accent-color); font-size: 1.05rem;">₹{{ item.price }}</span>
+                                <a href="{% url 'delete_menu_item' item.id %}" onclick="return confirm('Remove {{ item.name }} from menu?')" style="background: rgba(244, 67, 54, 0.12); border: 1px solid rgba(244, 67, 54, 0.3); color: #ff8a80; padding: 5px 10px; font-size: 0.8rem; border-radius: 6px; text-decoration: none; -webkit-text-fill-color: #ff8a80;">🗑️</a>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div style="text-align: center; color: var(--text-secondary); padding: 30px 0;">
+                            No dishes added yet. Use the form on the left to add your first menu item!
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

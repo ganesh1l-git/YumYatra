@@ -8,14 +8,27 @@
     <link rel="stylesheet" href="{% static 'premium.css' %}">
 </head>
 <body>
-    <div class="app-container" style="display: flex; align-items: center; justify-content: center; min-height: 80vh;">
-        <div class="card" style="width: 100%; max-width: 600px; padding: 40px 30px;">
-            <div style="font-size: 4rem; text-align: center; margin-bottom: 20px; animation: bounce 1s infinite alternate;">🎉</div>
+    <div class="app-container" style="display: flex; align-items: center; justify-content: center; min-height: 85vh; padding: 20px 0;">
+        <div class="card" style="width: 100%; max-width: 620px; padding: 35px 30px; margin: 0;">
+            <div style="font-size: 3.8rem; text-align: center; margin-bottom: 15px; animation: bounce 1s infinite alternate;">🎉</div>
             
-            <h2 style="margin-bottom: 15px; font-size: 2rem; text-align: center;">Order Placed Successfully!</h2>
-            <p style="color: var(--text-secondary); font-size: 1.05rem; line-height: 1.5; margin-bottom: 30px; text-align: center;">
-                Thank you for your order, <strong style="color: var(--text-primary);">{{ username }}</strong>! Your food is being prepared and will be delivered shortly.
+            <h2 style="margin-bottom: 10px; font-size: 2rem; text-align: center; color: #f8fafc;">Order Placed Successfully!</h2>
+            <p style="color: var(--text-secondary); font-size: 1rem; line-height: 1.5; margin-bottom: 25px; text-align: center;">
+                Thank you for your order, <strong style="color: var(--text-primary);">{{ username }}</strong>! Your order <strong>#{{ order.id }}</strong> has been sent to the kitchen.
             </p>
+
+            <!-- Primary Live Tracking Action Card -->
+            <div style="background: linear-gradient(135deg, rgba(255, 107, 107, 0.15) 0%, rgba(255, 142, 83, 0.15) 100%); border: 1px solid rgba(255, 107, 107, 0.4); padding: 18px; border-radius: 14px; margin-bottom: 25px; text-align: center;">
+                <div style="font-size: 1.1rem; font-weight: 700; color: #f8fafc; margin-bottom: 6px;">
+                    🛵 Live Delivery Tracking is Active
+                </div>
+                <div style="font-size: 0.85rem; color: #cbd5e1; margin-bottom: 15px;">
+                    Estimated delivery time: <strong>~{{ order.estimated_delivery_minutes }} minutes</strong>
+                </div>
+                <a href="{% url 'track_order' order.id username %}" class="btn" style="padding: 12px 28px; font-size: 1rem; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+                    📍 TRACK LIVE ORDER STATUS
+                </a>
+            </div>
 
             <!-- Order Details Table -->
             <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--glass-border); padding: 20px; border-radius: 12px; margin-bottom: 25px;">
@@ -56,27 +69,30 @@
                     <span style="color: var(--text-secondary);">Delivery Fee:</span>
                     <span style="color: var(--text-primary);">{% if order.delivery_fee == 0.0 %}FREE{% else %}₹{{ order.delivery_fee }}{% endif %}</span>
                 </div>
-                <div style="display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 6px;">
                     <span style="color: var(--text-secondary);">Services Fee:</span>
                     <span style="color: var(--text-primary);">₹{{ order.service_fee }}</span>
                 </div>
+                {% if order.discount_amount > 0 %}
+                    <div style="display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 6px; color: #4caf50; font-weight: 600;">
+                        <span>Coupon Discount ({{ order.coupon_code }}):</span>
+                        <span>-₹{{ order.discount_amount }}</span>
+                    </div>
+                {% endif %}
                 <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--glass-border); padding-top: 10px; font-weight: 600;">
                     <span style="color: var(--text-primary); font-size: 1rem;">Total Paid:</span>
-                    <span style="color: var(--accent-color); font-size: 1.25rem;">₹{{ order.grand_total }}</span>
+                    <span style="color: var(--accent-color); font-size: 1.3rem;">₹{{ order.grand_total }}</span>
                 </div>
             </div>
             
-            <div style="background: var(--item-bg); border: 1px solid var(--glass-border); padding: 20px; border-radius: 12px; margin-bottom: 30px; text-align: left;">
-                <h4 style="margin-bottom: 8px; color: var(--text-primary); font-size: 1rem; text-align: left; font-family: var(--font-heading);">📍 Delivery Address</h4>
-                <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.4; margin: 0;">{{ customer.address }}</p>
+            <div style="background: var(--item-bg); border: 1px solid var(--glass-border); padding: 16px; border-radius: 12px; margin-bottom: 25px; text-align: left;">
+                <h4 style="margin-bottom: 6px; color: var(--text-primary); font-size: 0.95rem; text-align: left; font-family: var(--font-heading);">📍 Delivery Address</h4>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.4; margin: 0;">{{ customer.address }}</p>
             </div>
 
-            <div class="flex justify-center gap-4">
-                {% if order_items %}
-                    <a href="{% url 'view_menu' order_items.0.restaurant.id username %}" class="btn" style="padding: 12px 24px; text-decoration: none;">Order More Food</a>
-                {% else %}
-                    <a href="/" class="btn" style="padding: 12px 24px; text-decoration: none;">Back to Home</a>
-                {% endif %}
+            <div class="flex justify-center gap-4" style="flex-wrap: wrap;">
+                <a href="{% url 'my_orders' username %}" class="btn btn-outline" style="padding: 10px 20px; font-size: 0.9rem; text-decoration: none; border-radius: 10px;">📦 View All My Orders</a>
+                <a href="{% url 'customer_home' username %}" class="btn" style="padding: 10px 20px; font-size: 0.9rem; text-decoration: none; border-radius: 10px;">🍕 Explore More Restaurants</a>
             </div>
         </div>
     </div>
@@ -84,7 +100,7 @@
     <style>
         @keyframes bounce {
             from { transform: translateY(0); }
-            to { transform: translateY(-10px); }
+            to { transform: translateY(-8px); }
         }
     </style>
 </body>
