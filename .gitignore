@@ -14,6 +14,12 @@ pip-delete-this-directory.txt
 # Databases
 db.sqlite3
 
+# Static files
+staticfiles/
+
+# Environment Variables
+.env
+
 # IDEs and editors
 .vscode/
 .idea/
