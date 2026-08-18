@@ -1,10 +1,11 @@
 """
 Django settings for YumYatra project.
 
-Optimized for local development and serverless deployment (Vercel).
+Optimized for local development and serverless deployment on Vercel.
 """
 
 import os
+import sys
 import shutil
 from pathlib import Path
 from dotenv import load_dotenv
@@ -12,7 +13,7 @@ from dotenv import load_dotenv
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Load environment variables from .env
+# Load environment variables from .env if present
 load_dotenv(BASE_DIR / '.env')
 load_dotenv(BASE_DIR.parent / '.env')
 
@@ -22,22 +23,22 @@ SECRET_KEY = os.getenv(
     'django-insecure-g0z#fr-hr2)ls@6wage!iyc#6ge_5e+e$(z%e)xuk$0lq6y2*^'
 )
 
-# SECURITY WARNING: don't run with debug turned on in production!
+# Debug setting
 DEBUG = os.getenv('DEBUG', 'True').lower() in ('true', '1', 't', 'yes')
 
 # Allowed Hosts
-allowed_hosts_raw = os.getenv('ALLOWED_HOSTS', '*')
-if allowed_hosts_raw == '*':
-    ALLOWED_HOSTS = ['*']
-else:
-    ALLOWED_HOSTS = [h.strip() for h in allowed_hosts_raw.split(',') if h.strip()]
+ALLOWED_HOSTS = ['*']
 
-# CSRF Trusted Origins for Vercel and localhost
-csrf_origins_raw = os.getenv(
-    'CSRF_TRUSTED_ORIGINS',
-    'https://*.vercel.app,https://*.now.sh,http://127.0.0.1,http://localhost'
-)
-CSRF_TRUSTED_ORIGINS = [o.strip() for o in csrf_origins_raw.split(',') if o.strip()]
+# CSRF Trusted Origins for Vercel and Localhost
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.vercel.app',
+    'https://*.now.sh',
+    'http://127.0.0.1',
+    'http://localhost',
+]
+extra_csrf = os.getenv('CSRF_TRUSTED_ORIGINS', '')
+if extra_csrf:
+    CSRF_TRUSTED_ORIGINS.extend([o.strip() for o in extra_csrf.split(',') if o.strip()])
 
 
 # Application definition
@@ -68,10 +69,13 @@ ROOT_URLCONF = 'YumYatra.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            BASE_DIR / 'delivery' / 'Templates',
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
@@ -87,25 +91,44 @@ WSGI_APPLICATION = 'YumYatra.wsgi.application'
 database_url = os.getenv('DATABASE_URL', '').strip()
 
 if database_url:
-    import dj_database_url
-    DATABASES = {
-        'default': dj_database_url.config(
-            default=database_url,
-            conn_max_age=600,
-            conn_health_checks=True,
-        )
-    }
+    try:
+        import dj_database_url
+        DATABASES = {
+            'default': dj_database_url.config(
+                default=database_url,
+                conn_max_age=600,
+                conn_health_checks=True,
+            )
+        }
+    except Exception:
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': BASE_DIR / 'db.sqlite3',
+            }
+        }
 else:
-    # Check if running on Vercel Serverless environment
-    is_vercel = os.getenv('VERCEL') == '1' or os.getenv('VERCEL_ENV') is not None
-    if is_vercel:
+    # Detect Vercel serverless environment
+    is_serverless = (
+        os.getenv('VERCEL') == '1'
+        or os.getenv('VERCEL_ENV') is not None
+        or os.getenv('NOW_REGION') is not None
+        or '/var/task' in str(BASE_DIR)
+    )
+
+    if is_serverless:
         tmp_db = Path('/tmp/db.sqlite3')
         orig_db = BASE_DIR / 'db.sqlite3'
-        if not tmp_db.exists() and orig_db.exists():
+        if not orig_db.exists():
+            orig_db = Path(__file__).resolve().parent.parent / 'db.sqlite3'
+        
+        # Copy seeded database to writable /tmp directory if needed
+        if orig_db.exists() and (not tmp_db.exists() or tmp_db.stat().st_size == 0):
             try:
-                shutil.copyfile(orig_db, tmp_db)
+                shutil.copy2(orig_db, tmp_db)
             except Exception:
                 pass
+
         db_path = tmp_db if tmp_db.exists() else orig_db
     else:
         db_path = BASE_DIR / 'db.sqlite3'
