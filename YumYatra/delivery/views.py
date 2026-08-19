@@ -187,6 +187,32 @@ def logout_view(request):
 
 
 # ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# Cart Helper & Management Utilities
+# ---------------------------------------------------------------------------
+def get_customer_cart(customer):
+    """Guarantees a single canonical Cart for the customer and cleanly merges any duplicates."""
+    if not customer:
+        return None
+    carts = Cart.objects.filter(customer=customer).order_by('id')
+    if not carts.exists():
+        return Cart.objects.create(customer=customer)
+    main_cart = carts.first()
+    if carts.count() > 1:
+        for extra_cart in carts[1:]:
+            for ci in extra_cart.cart_items.all():
+                existing_ci = main_cart.cart_items.filter(item=ci.item).first()
+                if existing_ci:
+                    existing_ci.quantity += ci.quantity
+                    existing_ci.save()
+                else:
+                    ci.cart = main_cart
+                    ci.save()
+            extra_cart.delete()
+    return main_cart
+
+
+# ---------------------------------------------------------------------------
 # Customer Experience & Shopping Views
 # ---------------------------------------------------------------------------
 def customer_home(request, username=None):
@@ -215,7 +241,7 @@ def customer_home(request, username=None):
     # Cart item count for current user
     cart_count = 0
     if customer:
-        cart = Cart.objects.filter(customer=customer).first()
+        cart = get_customer_cart(customer)
         if cart:
             cart_count = sum(ci.quantity for ci in cart.cart_items.all())
 
@@ -250,18 +276,20 @@ def view_menu(request, restaurant_id, username):
     if search_item:
         items = items.filter(name__icontains=search_item)
 
-    # Calculate cart count, favorite status, and review eligibility
+    # Calculate cart count, item quantities in cart, favorite status, and review eligibility
     customer = Customer.objects.filter(username=username).first()
     cart_count = 0
+    cart_items_map = {}
     is_favorited = False
     can_review = False
     has_pending_order = False
     user_review = None
 
     if customer:
-        cart = Cart.objects.filter(customer=customer).first()
+        cart = get_customer_cart(customer)
         if cart:
             cart_count = sum(ci.quantity for ci in cart.cart_items.all())
+            cart_items_map = {ci.item_id: ci.quantity for ci in cart.cart_items.all()}
         is_favorited = Favorite.objects.filter(customer=customer, restaurant=restaurant).exists()
         
         # Check if customer has at least one delivered order from this restaurant
@@ -279,11 +307,17 @@ def view_menu(request, restaurant_id, username):
 
         user_review = Review.objects.filter(restaurant=restaurant, customer=customer).first()
 
+    # Attach in_cart_qty for each item
+    item_list = []
+    for it in items:
+        it.in_cart_qty = cart_items_map.get(it.id, 0)
+        item_list.append(it)
+
     # Customer Reviews
     reviews = restaurant.reviews.all().order_by('-created_at')
 
     context = {
-        "itemList": items,
+        "itemList": item_list,
         "restaurant": restaurant,
         "username": username,
         "current_filter": filter_type,
@@ -364,13 +398,14 @@ def add_review(request, restaurant_id, username):
 
 
 def add_to_cart(request, item_id, username):
-    """Add item with quantity to customer cart."""
+    """Add item with quantity to customer cart. Supports both standard redirect and AJAX JSON."""
     item = get_object_or_404(Item, id=item_id)
     customer = get_object_or_404(Customer, username=username)
-    cart, _ = Cart.objects.get_or_create(customer=customer)
+    cart = get_customer_cart(customer)
 
+    qty_val = request.POST.get('quantity') or request.GET.get('quantity')
     try:
-        quantity = int(request.GET.get('quantity', 1))
+        quantity = int(qty_val) if qty_val is not None else 1
         if quantity < 1:
             quantity = 1
     except (ValueError, TypeError):
@@ -383,17 +418,170 @@ def add_to_cart(request, item_id, username):
         cart_item.quantity = quantity
     cart_item.save()
 
+    total_cart_count = sum(ci.quantity for ci in cart.cart_items.all())
+
+    is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.GET.get('format') == 'json' or request.POST.get('format') == 'json'
+
+    if is_ajax:
+        return JsonResponse({
+            'status': 'success',
+            'message': f'Added {quantity}x "{item.name}" to cart!',
+            'cart_count': total_cart_count,
+            'item_id': item.id,
+            'item_name': item.name,
+            'item_quantity': cart_item.quantity,
+            'item_price': item.price,
+            'item_subtotal': round(item.price * cart_item.quantity, 2),
+            'cart_subtotal': cart.subtotal(),
+            'grand_total': cart.grand_total(),
+        })
+
     messages.success(request, f'Added {quantity}x "{item.name}" to cart!')
     return redirect('view_menu', restaurant_id=item.restaurant.id, username=username)
 
 
-def remove_from_cart(request, item_id, username):
-    """Remove item from customer cart."""
+def update_cart_quantity(request, item_id, username):
+    """Update item quantity in cart (increment, decrement, or set value). Supports AJAX and standard redirects."""
+    item = get_object_or_404(Item, id=item_id)
     customer = get_object_or_404(Customer, username=username)
-    cart = Cart.objects.filter(customer=customer).first()
+    cart = get_customer_cart(customer)
+
+    action = request.POST.get('action') or request.GET.get('action') or 'set'
+    qty_val = request.POST.get('quantity') or request.GET.get('quantity')
+
+    cart_item = CartItem.objects.filter(cart=cart, item=item).first()
+    item_removed = False
+
+    if action == 'increment':
+        if cart_item:
+            cart_item.quantity += 1
+            cart_item.save()
+        else:
+            cart_item = CartItem.objects.create(cart=cart, item=item, quantity=1)
+    elif action == 'decrement':
+        if cart_item:
+            if cart_item.quantity > 1:
+                cart_item.quantity -= 1
+                cart_item.save()
+            else:
+                cart_item.delete()
+                cart_item = None
+                item_removed = True
+    elif action == 'set':
+        try:
+            quantity = int(qty_val)
+        except (ValueError, TypeError):
+            quantity = 1
+
+        if quantity <= 0:
+            if cart_item:
+                cart_item.delete()
+                cart_item = None
+                item_removed = True
+        else:
+            if cart_item:
+                cart_item.quantity = quantity
+                cart_item.save()
+            else:
+                cart_item = CartItem.objects.create(cart=cart, item=item, quantity=quantity)
+
+    total_cart_count = sum(ci.quantity for ci in cart.cart_items.all())
+    subtotal = cart.subtotal()
+    delivery_fee = cart.delivery_fee()
+    
+    # Recalculate coupon if applied
+    applied_coupon_code = request.session.get('coupon_code')
+    discount_amount = 0.0
+    applied_coupon = None
+    if applied_coupon_code:
+        applied_coupon = Coupon.objects.filter(code__iexact=applied_coupon_code, is_active=True).first()
+        if applied_coupon and subtotal >= applied_coupon.min_order_value:
+            discount_amount = applied_coupon.calculate_discount(subtotal, delivery_fee)
+        else:
+            request.session.pop('coupon_code', None)
+            applied_coupon_code = None
+
+    grand_total = max(0.0, round(cart.grand_total() - discount_amount, 2))
+
+    is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.GET.get('format') == 'json' or request.POST.get('format') == 'json'
+
+    if is_ajax:
+        return JsonResponse({
+            'status': 'success',
+            'cart_count': total_cart_count,
+            'item_id': item.id,
+            'item_removed': item_removed,
+            'item_quantity': cart_item.quantity if cart_item else 0,
+            'item_price': item.price,
+            'item_subtotal': round(item.price * cart_item.quantity, 2) if cart_item else 0.0,
+            'subtotal': subtotal,
+            'gst': cart.gst(),
+            'handling_fee': cart.handling_fee(),
+            'delivery_fee': delivery_fee,
+            'service_fee': cart.service_fee(),
+            'discount_amount': discount_amount,
+            'applied_coupon_code': applied_coupon_code,
+            'grand_total': grand_total,
+            'free_delivery_diff': round(500.0 - subtotal, 2) if subtotal < 500 else 0.0,
+            'cart_empty': not cart.cart_items.exists(),
+        })
+
+    return redirect('show_cart', username=username)
+
+
+def remove_from_cart(request, item_id, username):
+    """Remove item from customer cart. Supports AJAX and standard redirects."""
+    customer = get_object_or_404(Customer, username=username)
+    cart = get_customer_cart(customer)
     if cart:
         CartItem.objects.filter(cart=cart, item_id=item_id).delete()
         messages.info(request, 'Item removed from your cart.')
+
+    is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.GET.get('format') == 'json'
+    if is_ajax:
+        total_cart_count = sum(ci.quantity for ci in cart.cart_items.all()) if cart else 0
+        subtotal = cart.subtotal() if cart else 0.0
+        delivery_fee = cart.delivery_fee() if cart else 0.0
+        
+        applied_coupon_code = request.session.get('coupon_code')
+        discount_amount = 0.0
+        if applied_coupon_code and cart:
+            applied_coupon = Coupon.objects.filter(code__iexact=applied_coupon_code, is_active=True).first()
+            if applied_coupon and subtotal >= applied_coupon.min_order_value:
+                discount_amount = applied_coupon.calculate_discount(subtotal, delivery_fee)
+            else:
+                request.session.pop('coupon_code', None)
+                applied_coupon_code = None
+
+        grand_total = max(0.0, round(cart.grand_total() - discount_amount, 2)) if cart else 0.0
+
+        return JsonResponse({
+            'status': 'success',
+            'cart_count': total_cart_count,
+            'item_id': item_id,
+            'item_removed': True,
+            'subtotal': subtotal,
+            'gst': cart.gst() if cart else 0.0,
+            'handling_fee': cart.handling_fee() if cart else 0.0,
+            'delivery_fee': delivery_fee,
+            'service_fee': cart.service_fee() if cart else 0.0,
+            'discount_amount': discount_amount,
+            'grand_total': grand_total,
+            'free_delivery_diff': round(500.0 - subtotal, 2) if subtotal < 500 else 0.0,
+            'cart_empty': not cart.cart_items.exists() if cart else True,
+        })
+
+    return redirect('show_cart', username=username)
+
+
+def clear_cart(request, username):
+    """Empty all items from customer cart."""
+    customer = get_object_or_404(Customer, username=username)
+    cart = get_customer_cart(customer)
+    if cart:
+        cart.cart_items.all().delete()
+    request.session.pop('coupon_code', None)
+    messages.info(request, 'Your cart has been cleared.')
     return redirect('show_cart', username=username)
 
 
@@ -402,7 +590,7 @@ def apply_coupon(request, username):
     if request.method == 'POST':
         code = request.POST.get('coupon_code', '').strip().upper()
         customer = get_object_or_404(Customer, username=username)
-        cart = Cart.objects.filter(customer=customer).first()
+        cart = get_customer_cart(customer)
 
         if not cart or not cart.cart_items.exists():
             messages.error(request, 'Your cart is empty!')
@@ -435,13 +623,18 @@ def remove_coupon(request, username):
 def show_cart(request, username):
     """Review customer cart with complete fee breakdown and coupons."""
     customer = get_object_or_404(Customer, username=username)
-    cart = Cart.objects.filter(customer=customer).first()
-    cart_items = cart.cart_items.all() if cart else []
+    cart = get_customer_cart(customer)
+    cart_items = cart.cart_items.select_related('item', 'item__restaurant').all() if cart else []
     
     available_coupons = Coupon.objects.filter(is_active=True)
     applied_coupon_code = request.session.get('coupon_code')
     applied_coupon = None
     discount_amount = 0.0
+
+    # Determine last visited restaurant from cart items
+    last_restaurant = None
+    if cart_items:
+        last_restaurant = cart_items.last().item.restaurant
 
     context = {
         "cart": cart,
@@ -449,6 +642,7 @@ def show_cart(request, username):
         "username": username,
         "available_coupons": available_coupons,
         "applied_coupon_code": applied_coupon_code,
+        "last_restaurant": last_restaurant,
     }
 
     if cart and cart_items.exists():
@@ -494,7 +688,7 @@ def show_cart(request, username):
 def checkout(request, username):
     """Payment checkout with Razorpay or instant direct checkout fallback."""
     customer = get_object_or_404(Customer, username=username)
-    cart = Cart.objects.filter(customer=customer).first()
+    cart = get_customer_cart(customer)
     cart_items = cart.cart_items.all() if cart else []
     
     if not cart or not cart_items.exists():
@@ -557,7 +751,7 @@ def checkout(request, username):
 def direct_order(request, username):
     """Direct/COD order placement with coupon discount and live tracking transition."""
     customer = get_object_or_404(Customer, username=username)
-    cart = Cart.objects.filter(customer=customer).first()
+    cart = get_customer_cart(customer)
     cart_items = list(cart.cart_items.all()) if cart else []
 
     if not cart_items:
@@ -615,7 +809,7 @@ def direct_order(request, username):
 def orders(request, username):
     """Order confirmation and receipt screen."""
     customer = get_object_or_404(Customer, username=username)
-    cart = Cart.objects.filter(customer=customer).first()
+    cart = get_customer_cart(customer)
     cart_items = list(cart.cart_items.all()) if cart else []
     
     if not cart_items:
@@ -723,7 +917,7 @@ def reorder(request, order_id, username):
     """1-Click Reorder: populates cart with items from a past order."""
     customer = get_object_or_404(Customer, username=username)
     past_order = get_object_or_404(Order, id=order_id, customer=customer)
-    cart, _ = Cart.objects.get_or_create(customer=customer)
+    cart = get_customer_cart(customer)
 
     # Clear current cart
     cart.cart_items.all().delete()

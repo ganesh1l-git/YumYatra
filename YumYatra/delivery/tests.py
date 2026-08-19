@@ -239,3 +239,62 @@ class AuthenticationAndWorkflowTests(TestCase):
         fav_res2 = self.client.get(reverse('toggle_favorite', kwargs={'restaurant_id': self.restaurant.id, 'username': self.customer.username}))
         self.assertEqual(fav_res2.status_code, 302)
         self.assertFalse(Favorite.objects.filter(customer=self.customer, restaurant=self.restaurant).exists())
+
+    def test_ajax_add_to_cart_and_auto_quantity(self):
+        # Adding with quantity 0 should auto-fallback to 1
+        res = self.client.get(
+            f"/add_to_cart/{self.item.id}/{self.customer.username}/?quantity=0",
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+        )
+        self.assertEqual(res.status_code, 200)
+        data = res.json()
+        self.assertEqual(data['status'], 'success')
+        self.assertEqual(data['cart_count'], 1)
+        self.assertEqual(data['item_quantity'], 1)
+
+        # Adding 2 more via AJAX
+        res2 = self.client.get(
+            f"/add_to_cart/{self.item.id}/{self.customer.username}/?quantity=2",
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+        )
+        self.assertEqual(res2.status_code, 200)
+        data2 = res2.json()
+        self.assertEqual(data2['cart_count'], 3)
+        self.assertEqual(data2['item_quantity'], 3)
+
+    def test_update_cart_quantity_increment_decrement_and_set(self):
+        # Initial item
+        self.client.get(f"/add_to_cart/{self.item.id}/{self.customer.username}/?quantity=2")
+
+        # Increment
+        res_inc = self.client.get(
+            f"/update_cart_quantity/{self.item.id}/{self.customer.username}/?action=increment",
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+        )
+        self.assertEqual(res_inc.status_code, 200)
+        self.assertEqual(res_inc.json()['item_quantity'], 3)
+
+        # Decrement
+        res_dec = self.client.get(
+            f"/update_cart_quantity/{self.item.id}/{self.customer.username}/?action=decrement",
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+        )
+        self.assertEqual(res_dec.status_code, 200)
+        self.assertEqual(res_dec.json()['item_quantity'], 2)
+
+        # Set to 0 -> Removes item
+        res_zero = self.client.get(
+            f"/update_cart_quantity/{self.item.id}/{self.customer.username}/?action=set&quantity=0",
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+        )
+        self.assertEqual(res_zero.status_code, 200)
+        self.assertTrue(res_zero.json()['item_removed'])
+        self.assertEqual(res_zero.json()['cart_count'], 0)
+
+    def test_clear_cart(self):
+        self.client.get(f"/add_to_cart/{self.item.id}/{self.customer.username}/?quantity=3")
+        res = self.client.get(reverse('clear_cart', kwargs={'username': self.customer.username}), follow=True)
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, 'Your Cart is Empty')
+
+

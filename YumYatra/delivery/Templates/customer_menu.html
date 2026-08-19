@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YumYatra - {{ restaurant.name }} Menu</title>
-    <link rel="stylesheet" href="{% static 'premium.css' %}">
+    <link rel="stylesheet" href="{% static 'premium.css' %}?v={% now 'U' %}">
     <style>
         .filter-btn {
             padding: 8px 16px;
@@ -51,6 +51,93 @@
             background: rgba(255, 107, 107, 0.2);
             border-color: #ff6b6b;
         }
+
+        /* Real Food Delivery Quantity Counter - Soft Light Red (Coral Rose style) */
+        .dish-cart-action {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: flex-end !important;
+            min-height: 44px !important;
+        }
+
+        .qty-stepper {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8787 100%) !important;
+            border: 1.5px solid rgba(255, 255, 255, 0.4) !important;
+            border-radius: 12px !important;
+            width: 140px !important;
+            height: 44px !important;
+            box-sizing: border-box !important;
+            box-shadow: 0 4px 14px rgba(255, 107, 107, 0.35), 0 2px 6px rgba(0, 0, 0, 0.15) !important;
+            user-select: none !important;
+            overflow: hidden !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+
+        .qty-stepper:hover {
+            background: linear-gradient(135deg, #fa5252 0%, #ff6b6b 100%) !important;
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.5) !important;
+            border-color: rgba(255, 255, 255, 0.6) !important;
+            transform: translateY(-2px) !important;
+        }
+
+        .stepper-btn {
+            background: transparent !important;
+            color: #ffffff !important;
+            border: none !important;
+            width: 44px !important;
+            height: 100% !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 1.6rem !important;
+            font-weight: 900 !important;
+            line-height: 1 !important;
+            cursor: pointer !important;
+            transition: all 0.15s ease !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+            user-select: none !important;
+            -webkit-text-fill-color: #ffffff !important;
+            outline: none !important;
+        }
+
+        .stepper-btn:hover {
+            background: rgba(0, 0, 0, 0.15) !important;
+            color: #ffffff !important;
+            -webkit-text-fill-color: #ffffff !important;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        .stepper-btn:active {
+            background: rgba(0, 0, 0, 0.3) !important;
+            transform: scale(0.9) !important;
+        }
+
+        .stepper-count {
+            font-family: var(--font-heading), 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif !important;
+            font-size: 1.25rem !important;
+            font-weight: 800 !important;
+            color: #ffffff !important;
+            -webkit-text-fill-color: #ffffff !important;
+            padding: 0 4px !important;
+            text-align: center !important;
+            flex: 1 !important;
+            font-variant-numeric: tabular-nums !important;
+            line-height: 1 !important;
+            user-select: none !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
+        }
     </style>
 </head>
 <body>
@@ -62,18 +149,16 @@
                     <a href="{% url 'customer_home' username %}" style="background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 1.8rem; font-family: var(--font-heading); font-weight: 800;">🍕 YumYatra</a>
                 </div>
                 <a href="{% url 'my_orders' username %}" class="btn btn-outline" style="padding: 8px 16px; font-size: 0.85rem;">📦 My Orders</a>
-                <a href="{% url 'show_cart' username %}" class="btn" style="padding: 9px 20px; font-size: 0.85rem; white-space: nowrap; display: flex; align-items: center; gap: 8px;">
+                <a href="{% url 'show_cart' username %}" id="cart-nav-btn" class="btn" style="padding: 9px 20px; font-size: 0.85rem; white-space: nowrap; display: flex; align-items: center; gap: 8px;">
                     <span>🛒 View Cart</span>
-                    {% if cart_count > 0 %}
-                        <span style="background: #ffffff; color: var(--accent-color); font-size: 0.75rem; font-weight: 800; padding: 2px 7px; border-radius: 10px;">{{ cart_count }}</span>
-                    {% endif %}
+                    <span id="cart-nav-count" style="{% if cart_count == 0 %}display: none;{% endif %} background: #ffffff; color: var(--accent-color); font-size: 0.75rem; font-weight: 800; padding: 2px 7px; border-radius: 10px;">{{ cart_count }}</span>
                 </a>
             </div>
-            <div style="display: flex; align-items: center; gap: 20px;">
+            <div style="display: flex; align-items: center; gap: 15px;">
                 <div style="font-size: 0.9rem; color: #94a3b8;">
                     Hi, <strong style="color: #f8fafc;">{{ username }}</strong>
                 </div>
-                <a href="{% url 'customer_home' username %}" style="background: transparent; border: 1px solid rgba(255, 255, 255, 0.2); color: #94a3b8; padding: 8px 18px; font-size: 0.85rem; border-radius: 10px; font-weight: 500; text-decoration: none; display: inline-block; -webkit-text-fill-color: #94a3b8; white-space: nowrap;">⬅️ All Restaurants</a>
+                <a href="{% url 'customer_home' username %}" class="btn-back">⬅️ All Restaurants</a>
             </div>
         </header>
 
@@ -142,7 +227,7 @@
                         <div class="row-subtitle" style="font-size: 0.85rem; line-height: 1.4;">{{ item.description }}</div>
                     </div>
                     
-                    <!-- Right: Quantity, Price and Add to Cart action button -->
+                    <!-- Right: Quantity Stepper, Price and Add to Cart action button -->
                     <div class="row-action" style="display: flex; flex-direction: column; align-items: flex-end; gap: 10px;">
                         <div style="display: flex; align-items: center; gap: 12px;">
                             {% if item.vegetarian %}
@@ -153,12 +238,12 @@
                             <span class="card-price" style="font-size: 1.3rem;">₹{{ item.price }}</span>
                         </div>
                         
-                        <div style="display: flex; align-items: center; gap: 10px; margin-top: 5px;">
-                            <div class="quantity-selector">
-                                <label for="qty-{{ item.id }}" style="margin: 0; font-size: 0.8rem;">Qty:</label>
-                                <input type="number" id="qty-{{ item.id }}" class="quantity-input" value="1" min="1" max="25">
+                        <div class="dish-cart-action">
+                            <div class="qty-stepper" id="stepper-{{ item.id }}">
+                                <button type="button" class="stepper-btn stepper-minus" onclick="changeDishCount('{{ item.id }}', '{{ username }}', -1)" title="Decrease Quantity" aria-label="Decrease Quantity">−</button>
+                                <span id="dish-count-{{ item.id }}" class="stepper-count">{{ item.in_cart_qty|default:0 }}</span>
+                                <button type="button" class="stepper-btn stepper-plus" onclick="changeDishCount('{{ item.id }}', '{{ username }}', 1)" title="Increase Quantity" aria-label="Increase Quantity">+</button>
                             </div>
-                            <button type="button" onclick="addToCart('{{ item.id }}', '{{ username }}')" class="btn" style="padding: 10px 20px; font-size: 0.9rem; white-space: nowrap;">+ Add to Cart</button>
                         </div>
                     </div>
                 </div>
@@ -261,11 +346,94 @@
         </div>
     </div>
 
+    <!-- Floating Toast Notification -->
+    <div id="cart-toast" class="cart-toast">
+        <span id="toast-icon">🍕</span>
+        <span id="toast-message">Item added to cart!</span>
+    </div>
+
     <script>
-        function addToCart(itemId, username) {
-            const qtyInput = document.getElementById('qty-' + itemId);
-            const quantity = qtyInput ? qtyInput.value : 1;
-            window.location.href = `/add_to_cart/${itemId}/${username}?quantity=${quantity}`;
+        const USERNAME = "{{ username }}";
+
+        // Show animated toast message
+        let toastTimeout = null;
+        function showToast(message, icon = '🛒') {
+            const toast = document.getElementById('cart-toast');
+            const iconEl = document.getElementById('toast-icon');
+            const msgEl = document.getElementById('toast-message');
+            if (!toast) return;
+
+            if (iconEl) iconEl.textContent = icon;
+            if (msgEl) msgEl.textContent = message;
+
+            toast.classList.add('show');
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function updateCartBadge(count) {
+            const cartCountEl = document.getElementById('cart-nav-count');
+            if (cartCountEl) {
+                cartCountEl.textContent = count;
+                cartCountEl.style.display = count > 0 ? 'inline-block' : 'none';
+                cartCountEl.classList.remove('cart-badge-bounce');
+                void cartCountEl.offsetWidth; // Trigger reflow
+                cartCountEl.classList.add('cart-badge-bounce');
+            }
+        }
+
+        // Unified Dish Quantity Handler (Increment / Decrement in One Integrated Component)
+        function changeDishCount(itemId, username, delta) {
+            const countEl = document.getElementById('dish-count-' + itemId);
+            if (!countEl) return;
+
+            let currentVal = parseInt(countEl.textContent) || 0;
+            let newVal = currentVal + delta;
+
+            if (newVal < 0) {
+                return; // Cannot decrease below 0
+            }
+
+            // Immediate optimistic UI update
+            countEl.textContent = newVal;
+
+            const action = delta > 0 ? 'increment' : 'decrement';
+
+            fetch(`/update_cart_quantity/${itemId}/${username}/?action=${action}`, {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(res => {
+                if (!res.ok) throw new Error('Network response failed');
+                return res.json();
+            })
+            .then(data => {
+                if (data.status === 'success') {
+                    // Update count accurately from backend response
+                    countEl.textContent = data.item_quantity;
+
+                    // Update navbar badge
+                    updateCartBadge(data.cart_count);
+
+                    // Show toast notification
+                    if (delta > 0) {
+                        showToast(`Added "${data.item_name}" (${data.item_quantity} in cart)`, '🍕');
+                    } else if (data.item_removed || data.item_quantity === 0) {
+                        showToast(`Removed "${data.item_name}" from cart`, '🗑️');
+                    } else {
+                        showToast(`Updated "${data.item_name}" (${data.item_quantity} in cart)`, '🛒');
+                    }
+                }
+            })
+            .catch(err => {
+                console.error('Error updating dish count:', err);
+                // Revert on error
+                countEl.textContent = currentVal;
+            });
         }
     </script>
 </body>

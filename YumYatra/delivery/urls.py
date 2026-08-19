@@ -20,6 +20,8 @@ urlpatterns = [
     # Cart & Coupons
     path('add_to_cart/<int:item_id>/<str:username>/', views.add_to_cart, name='add_to_cart'),
     path('remove_from_cart/<int:item_id>/<str:username>/', views.remove_from_cart, name='remove_from_cart'),
+    path('update_cart_quantity/<int:item_id>/<str:username>/', views.update_cart_quantity, name='update_cart_quantity'),
+    path('clear_cart/<str:username>/', views.clear_cart, name='clear_cart'),
     path('show_cart/<str:username>/', views.show_cart, name='show_cart'),
     path('apply_coupon/<str:username>/', views.apply_coupon, name='apply_coupon'),
     path('remove_coupon/<str:username>/', views.remove_coupon, name='remove_coupon'),
