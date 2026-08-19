@@ -18,10 +18,12 @@ from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 app = application
 
-# Auto-migrate SQLite in /tmp on serverless cold start if needed
-if not os.getenv('DATABASE_URL'):
-    try:
-        from django.core.management import call_command
-        call_command('migrate', interactive=False)
-    except Exception as e:
-        print(f"Serverless migration note: {e}")
+# Auto-migrate and auto-seed on serverless cold start if database is empty
+try:
+    from django.core.management import call_command
+    from delivery.models import Restaurant
+    call_command('migrate', interactive=False)
+    if Restaurant.objects.count() == 0:
+        call_command('loaddata', 'initial_data')
+except Exception as e:
+    print(f"Cold-start auto-setup note: {e}")
