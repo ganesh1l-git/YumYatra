@@ -7,17 +7,17 @@
     <title>YumYatra - Authentication Failed</title>
     <link rel="stylesheet" href="{% static 'premium.css' %}">
 </head>
-<body>
+<body style="background: #f8f9fa;">
     <div class="app-container" style="display: flex; align-items: center; justify-content: center; min-height: 80vh;">
-        <div class="card" style="max-width: 480px; text-align: center; padding: 40px 30px;">
-            <div style="font-size: 3.5rem; margin-bottom: 15px;">🔒</div>
-            <h2 style="margin-bottom: 10px; font-size: 1.8rem;">Authentication Failed</h2>
-            <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.5; margin-bottom: 25px;">
-                Invalid credentials provided or session expired. Please verify your username/password and try again.
+        <div class="card" style="max-width: 440px; text-align: center; padding: 35px 28px; box-shadow: var(--shadow-md);">
+            <div style="font-size: 3rem; margin-bottom: 12px;">🔒</div>
+            <h1 style="margin-bottom: 8px; font-size: 1.5rem;">Authentication Failed</h1>
+            <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5; margin-bottom: 22px;">
+                Invalid credentials provided or session expired. Please verify your username and password.
             </p>
             <div style="display: flex; flex-direction: column; gap: 10px;">
-                <a href="{% url 'open_signin' %}" class="btn" style="padding: 12px 24px; text-decoration: none;">Try Signing In Again</a>
-                <a href="{% url 'say_hello' %}" style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 10px;">Back to Home</a>
+                <a href="{% url 'open_signin' %}" class="btn" style="padding: 11px 20px; font-size: 0.92rem; border-radius: 8px;">Try Signing In Again</a>
+                <a href="{% url 'say_hello' %}" style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 8px;">&larr; Back to Home</a>
             </div>
         </div>
     </div>

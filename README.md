@@ -27,3 +27,7 @@ YumYatra is a modern, premium Django-based food delivery web application that al
 - **Database**: SQLite3
 - **Payment API**: Razorpay integration
 
+## Documentation
+- Detailed system workflows, load balancing, maintainability, and concurrency conflict handling are documented in [SYSTEM_ARCHITECTURE.md](documentation/SYSTEM_ARCHITECTURE.md).
+
+

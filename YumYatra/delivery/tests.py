@@ -1,6 +1,6 @@
 from django.test import TestCase, Client
 from django.urls import reverse
-from .models import Customer, Restaurant, Item, Cart, CartItem, Order, OrderItem, Coupon, Review, Favorite
+from .models import Customer, Restaurant, Item, Cart, CartItem, Order, OrderItem, Coupon, Review, Favorite, Address
 
 
 class AuthenticationAndWorkflowTests(TestCase):
@@ -296,5 +296,77 @@ class AuthenticationAndWorkflowTests(TestCase):
         res = self.client.get(reverse('clear_cart', kwargs={'username': self.customer.username}), follow=True)
         self.assertEqual(res.status_code, 200)
         self.assertContains(res, 'Your Cart is Empty')
+
+    def test_separate_login_screens(self):
+        # Customer login only
+        res_cust = self.client.get(reverse('open_signin'))
+        self.assertEqual(res_cust.status_code, 200)
+        self.assertContains(res_cust, 'Customer Sign In')
+        self.assertNotContains(res_cust, 'role-selector')
+        self.assertNotContains(res_cust, 'AUTHENTICATE AS ADMIN')
+
+        # Partner login only
+        res_partner = self.client.get(reverse('partner_signin'))
+        self.assertEqual(res_partner.status_code, 200)
+        self.assertContains(res_partner, 'Partner Portal')
+        self.assertContains(res_partner, 'SIGN IN AS PARTNER')
+        self.assertNotContains(res_partner, 'role-selector')
+
+        # Admin login only
+        res_admin = self.client.get(reverse('admin_signin'))
+        self.assertEqual(res_admin.status_code, 200)
+        self.assertContains(res_admin, 'Admin Portal')
+        self.assertContains(res_admin, 'AUTHENTICATE AS ADMIN')
+        self.assertNotContains(res_admin, 'role-selector')
+
+    def test_address_management_lifecycle(self):
+        # 1. Save new address
+        save_res = self.client.post(reverse('save_address', kwargs={'username': self.customer.username}), {
+            'tag': 'Home',
+            'flat_house': 'Flat 402, Lotus Orchid',
+            'area': '100ft Road, Indiranagar',
+            'landmark': 'Near Metro',
+            'city': 'Bengaluru',
+            'is_default': '1'
+        }, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(save_res.status_code, 200)
+        save_data = save_res.json()
+        self.assertEqual(save_data['status'], 'success')
+        addr_id = save_data['address']['id']
+
+        addr = Address.objects.get(id=addr_id)
+        self.assertEqual(addr.tag, 'Home')
+        self.assertTrue(addr.is_default)
+        self.assertIn('Indiranagar', addr.full_address())
+
+        # 2. Add second address (Work)
+        work_res = self.client.post(reverse('save_address', kwargs={'username': self.customer.username}), {
+            'tag': 'Work',
+            'flat_house': 'Embassy Tech Village',
+            'area': 'Bellandur',
+            'city': 'Bengaluru',
+            'is_default': '0'
+        }, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        work_id = work_res.json()['address']['id']
+        work_addr = Address.objects.get(id=work_id)
+        self.assertFalse(work_addr.is_default)
+
+        # 3. Select second address as active
+        sel_res = self.client.post(reverse('select_address', kwargs={'username': self.customer.username, 'address_id': work_id}),
+                                   HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(sel_res.status_code, 200)
+        work_addr.refresh_from_db()
+        addr.refresh_from_db()
+        self.assertTrue(work_addr.is_default)
+        self.assertFalse(addr.is_default)
+
+        # 4. Direct order uses active address
+        self.client.get(f"/add_to_cart/{self.item.id}/{self.customer.username}/?quantity=1")
+        order_res = self.client.get(f"/direct_order/{self.customer.username}/?address_id={work_id}")
+        self.assertEqual(order_res.status_code, 200)
+        order = Order.objects.filter(customer=self.customer).order_by('-created_at').first()
+        self.assertIsNotNone(order)
+        self.assertEqual(order.delivery_address, work_addr.full_address())
+
 
 

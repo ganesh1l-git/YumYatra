@@ -5,7 +5,7 @@ from django.conf import settings
 from django.utils import timezone
 import razorpay
 
-from .models import Customer, Item, Cart, Restaurant, CartItem, Order, OrderItem, Coupon, Review, Favorite
+from .models import Customer, Item, Cart, Restaurant, CartItem, Order, OrderItem, Coupon, Review, Favorite, Address
 
 
 # ---------------------------------------------------------------------------
@@ -21,9 +21,19 @@ def say_hello(request):
 # Authentication: Sign In, Sign Up, Log Out
 # ---------------------------------------------------------------------------
 def open_signin(request):
-    """Renders the signin page with optional pre-selected role."""
+    """Renders the customer signin page (or requested role if provided in URL)."""
     active_role = request.GET.get('role', 'user')
     return render(request, 'signin.html', {'active_role': active_role})
+
+
+def partner_signin(request):
+    """Renders ONLY the Restaurant Partner signin page."""
+    return render(request, 'signin.html', {'active_role': 'restaurant'})
+
+
+def admin_signin(request):
+    """Renders ONLY the Admin Portal signin page."""
+    return render(request, 'signin.html', {'active_role': 'admin'})
 
 
 def open_signup(request):
@@ -79,6 +89,10 @@ def signup(request):
 
             if not username or not password or not email:
                 messages.error(request, 'Username, email, and password are required.')
+                return render(request, 'signup.html', {'active_role': 'user'})
+
+            if username.lower() in ['admin', 'guest', 'root', 'system']:
+                messages.error(request, f'Username "{username}" is reserved. Please choose another.')
                 return render(request, 'signup.html', {'active_role': 'user'})
 
             if Customer.objects.filter(username__iexact=username).exists():
@@ -217,8 +231,15 @@ def get_customer_cart(customer):
 # ---------------------------------------------------------------------------
 def customer_home(request, username=None):
     """Main customer discovery view with search, cuisine pills, and favorites filter."""
-    user = username or request.session.get('username', 'Guest')
+    user = username or request.session.get('username')
+    if not user or user == 'Guest':
+        messages.info(request, 'Please sign in to browse and place orders.')
+        return redirect('open_signin')
+
     customer = Customer.objects.filter(username=user).first()
+    if not customer:
+        messages.error(request, f'Customer account "{user}" not found. Please sign in.')
+        return redirect('open_signin')
     
     query = request.GET.get('q', '').strip()
     cuisine_filter = request.GET.get('cuisine', '').strip()
@@ -248,9 +269,16 @@ def customer_home(request, username=None):
     # Get list of unique cuisines for filter pills
     all_cuisines = sorted(list(set([r.cuisine.strip() for r in Restaurant.objects.all() if r.cuisine])))
 
+    # Delivery Address for Swiggy/Zomato style address picker
+    active_address = customer.get_active_address() if customer else None
+    saved_addresses = customer.saved_addresses.all().order_by('-is_default', '-id') if customer else []
+
     context = {
         "restaurantList": restaurants,
         "username": user,
+        "customer": customer,
+        "active_address": active_address,
+        "saved_addresses": saved_addresses,
         "cart_count": cart_count,
         "query": query,
         "current_cuisine": cuisine_filter,
@@ -259,6 +287,107 @@ def customer_home(request, username=None):
         "user_fav_ids": user_fav_ids,
     }
     return render(request, 'customer_home.html', context)
+
+
+# ---------------------------------------------------------------------------
+# Address Management Views (Swiggy / Zomato style)
+# ---------------------------------------------------------------------------
+def save_address(request, username):
+    """Saves a new delivery address (Home, Work, Other) for the customer."""
+    customer = get_object_or_404(Customer, username=username)
+    if request.method == 'POST':
+        tag = request.POST.get('tag', 'Home').strip()
+        flat_house = request.POST.get('flat_house', '').strip()
+        area = request.POST.get('area', '').strip()
+        landmark = request.POST.get('landmark', '').strip()
+        city = request.POST.get('city', 'Bengaluru').strip()
+        is_default = request.POST.get('is_default') in ['true', 'True', '1', 'on'] or not customer.saved_addresses.exists()
+
+        if not flat_house or not area:
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest' or 'application/json' in request.headers.get('Accept', ''):
+                return JsonResponse({'status': 'error', 'message': 'Flat/House and Area are required.'}, status=400)
+            messages.error(request, 'Flat/House and Area are required.')
+            return redirect(request.META.get('HTTP_REFERER', 'customer_home'))
+
+        if is_default:
+            customer.saved_addresses.update(is_default=False)
+
+        address = Address.objects.create(
+            customer=customer,
+            tag=tag if tag in ['Home', 'Work', 'Other'] else 'Home',
+            flat_house=flat_house,
+            area=area,
+            landmark=landmark,
+            city=city or 'Bengaluru',
+            is_default=is_default
+        )
+
+        if is_default:
+            customer.address = address.full_address()
+            customer.save(update_fields=['address'])
+
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest' or 'application/json' in request.headers.get('Accept', ''):
+            return JsonResponse({
+                'status': 'success',
+                'message': 'Address saved successfully!',
+                'address': {
+                    'id': address.id,
+                    'tag': address.tag,
+                    'flat_house': address.flat_house,
+                    'area': address.area,
+                    'landmark': address.landmark,
+                    'city': address.city,
+                    'full_address': address.full_address(),
+                    'is_default': address.is_default
+                }
+            })
+        messages.success(request, f'Address "{tag}" saved successfully!')
+    return redirect(request.META.get('HTTP_REFERER', 'customer_home'))
+
+
+def select_address(request, username, address_id):
+    """Sets a saved address as the active/default delivery address."""
+    customer = get_object_or_404(Customer, username=username)
+    address = get_object_or_404(Address, id=address_id, customer=customer)
+    customer.saved_addresses.update(is_default=False)
+    address.is_default = True
+    address.save(update_fields=['is_default'])
+    customer.address = address.full_address()
+    customer.save(update_fields=['address'])
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest' or 'application/json' in request.headers.get('Accept', ''):
+        return JsonResponse({
+            'status': 'success',
+            'message': f'Active delivery address set to {address.tag}.',
+            'address': {
+                'id': address.id,
+                'tag': address.tag,
+                'full_address': address.full_address(),
+            }
+        })
+    messages.success(request, f'Active delivery address set to {address.tag}.')
+    return redirect(request.META.get('HTTP_REFERER', 'customer_home'))
+
+
+def delete_address(request, username, address_id):
+    """Deletes a saved address for the customer."""
+    customer = get_object_or_404(Customer, username=username)
+    address = get_object_or_404(Address, id=address_id, customer=customer)
+    was_default = address.is_default
+    address.delete()
+
+    if was_default:
+        next_addr = customer.saved_addresses.first()
+        if next_addr:
+            next_addr.is_default = True
+            next_addr.save(update_fields=['is_default'])
+            customer.address = next_addr.full_address()
+            customer.save(update_fields=['address'])
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest' or 'application/json' in request.headers.get('Accept', ''):
+        return JsonResponse({'status': 'success', 'message': 'Address deleted successfully.'})
+    messages.info(request, 'Address deleted.')
+    return redirect(request.META.get('HTTP_REFERER', 'customer_home'))
 
 
 def view_menu(request, restaurant_id, username):
@@ -315,11 +444,16 @@ def view_menu(request, restaurant_id, username):
 
     # Customer Reviews
     reviews = restaurant.reviews.all().order_by('-created_at')
+    active_address = customer.get_active_address() if customer else None
+    saved_addresses = customer.saved_addresses.all().order_by('-is_default', '-id') if customer else []
 
     context = {
         "itemList": item_list,
         "restaurant": restaurant,
         "username": username,
+        "customer": customer,
+        "active_address": active_address,
+        "saved_addresses": saved_addresses,
         "current_filter": filter_type,
         "search_item": search_item,
         "cart_count": cart_count,
@@ -346,9 +480,9 @@ def toggle_favorite(request, restaurant_id, username):
         messages.success(request, f'Added "{restaurant.name}" to your favorites! ❤️')
 
     referer = request.META.get('HTTP_REFERER')
-    if referer and 'customer_home' in referer:
-        return redirect('customer_home', username=username)
-    return redirect('view_menu', restaurant_id=restaurant.id, username=username)
+    if referer:
+        return redirect(referer)
+    return redirect('customer_home', username=username)
 
 
 def add_review(request, restaurant_id, username):
@@ -510,6 +644,7 @@ def update_cart_quantity(request, item_id, username):
             'status': 'success',
             'cart_count': total_cart_count,
             'item_id': item.id,
+            'item_name': item.name,
             'item_removed': item_removed,
             'item_quantity': cart_item.quantity if cart_item else 0,
             'item_price': item.price,
@@ -532,10 +667,12 @@ def update_cart_quantity(request, item_id, username):
 def remove_from_cart(request, item_id, username):
     """Remove item from customer cart. Supports AJAX and standard redirects."""
     customer = get_object_or_404(Customer, username=username)
+    item = Item.objects.filter(id=item_id).first()
+    item_name = item.name if item else 'Item'
     cart = get_customer_cart(customer)
     if cart:
         CartItem.objects.filter(cart=cart, item_id=item_id).delete()
-        messages.info(request, 'Item removed from your cart.')
+        messages.info(request, f'"{item_name}" removed from your cart.')
 
     is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.GET.get('format') == 'json'
     if is_ajax:
@@ -559,6 +696,7 @@ def remove_from_cart(request, item_id, username):
             'status': 'success',
             'cart_count': total_cart_count,
             'item_id': item_id,
+            'item_name': item_name,
             'item_removed': True,
             'subtotal': subtotal,
             'gst': cart.gst() if cart else 0.0,
@@ -710,8 +848,14 @@ def checkout(request, username):
 
     grand_total = max(0.0, round(cart.grand_total() - discount_amount, 2))
 
+    active_address = customer.get_active_address()
+    saved_addresses = customer.saved_addresses.all().order_by('-is_default', '-id')
+
     context = {
         'username': username,
+        'customer': customer,
+        'active_address': active_address,
+        'saved_addresses': saved_addresses,
         'cart_items': cart_items,
         'subtotal': subtotal,
         'gst': cart.gst(),
@@ -728,7 +872,7 @@ def checkout(request, username):
         client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
         client.session.trust_env = False
         order_data = {
-            'amount': int(grand_total * 100),
+            'amount': int(round(grand_total * 100)),
             'currency': 'INR',
             'payment_capture': '1',
         }
@@ -749,7 +893,7 @@ def checkout(request, username):
 
 
 def direct_order(request, username):
-    """Direct/COD order placement with coupon discount and live tracking transition."""
+    """Direct/COD order placement with coupon discount, address recording and live tracking transition."""
     customer = get_object_or_404(Customer, username=username)
     cart = get_customer_cart(customer)
     cart_items = list(cart.cart_items.all()) if cart else []
@@ -769,6 +913,16 @@ def direct_order(request, username):
 
     grand_total = max(0.0, round(cart.grand_total() - discount_amount, 2))
 
+    # Resolve delivery address
+    active_address = customer.get_active_address()
+    selected_addr_id = request.POST.get('address_id') or request.GET.get('address_id')
+    if selected_addr_id:
+        custom_addr = customer.saved_addresses.filter(id=selected_addr_id).first()
+        if custom_addr:
+            active_address = custom_addr
+
+    delivery_addr_str = active_address.full_address() if active_address else (customer.address or "Indiranagar, Bengaluru")
+
     order = Order.objects.create(
         customer=customer,
         subtotal=subtotal,
@@ -780,7 +934,8 @@ def direct_order(request, username):
         coupon_code=applied_coupon_code,
         grand_total=grand_total,
         status='Placed',
-        estimated_delivery_minutes=30
+        estimated_delivery_minutes=30,
+        delivery_address=delivery_addr_str
     )
 
     order_items = []
@@ -814,7 +969,10 @@ def orders(request, username):
     
     if not cart_items:
         latest_order = Order.objects.filter(customer=customer).order_by('-created_at').first()
-        order_items = latest_order.order_items.all() if latest_order else []
+        if not latest_order:
+            messages.info(request, "You don't have any active or past orders yet.")
+            return redirect('customer_home', username=username)
+        order_items = latest_order.order_items.all()
         return render(request, 'orders.html', {
             'username': username,
             'customer': customer,
@@ -834,6 +992,15 @@ def orders(request, username):
 
     grand_total = max(0.0, round(cart.grand_total() - discount_amount, 2))
 
+    active_address = customer.get_active_address()
+    selected_addr_id = request.POST.get('address_id') or request.GET.get('address_id')
+    if selected_addr_id:
+        custom_addr = customer.saved_addresses.filter(id=selected_addr_id).first()
+        if custom_addr:
+            active_address = custom_addr
+
+    delivery_addr_str = active_address.full_address() if active_address else (customer.address or "Indiranagar, Bengaluru")
+
     order = Order.objects.create(
         customer=customer,
         subtotal=subtotal,
@@ -845,7 +1012,8 @@ def orders(request, username):
         coupon_code=applied_coupon_code,
         grand_total=grand_total,
         status='Placed',
-        estimated_delivery_minutes=30
+        estimated_delivery_minutes=30,
+        delivery_address=delivery_addr_str
     )
 
     order_items = []
@@ -1056,6 +1224,7 @@ def admin_home(request):
 
     restaurant_reports.sort(key=lambda x: x['sales_value'], reverse=True)
     today_orders = Order.objects.filter(created_at__date=today).order_by('-created_at')
+    total_orders_today = today_orders.count()
 
     context = {
         'restaurant_reports': restaurant_reports,
@@ -1084,7 +1253,10 @@ def add_restaurant(request):
         password = request.POST.get('password', '').strip()
         picture = request.POST.get('picture', '').strip()
         cuisine = request.POST.get('cuisine', '').strip()
-        rating = float(request.POST.get('rating') or 4.0)
+        try:
+            rating = float(request.POST.get('rating') or 4.5)
+        except (ValueError, TypeError):
+            rating = 4.5
         
         if not name or not cuisine:
             messages.error(request, 'Restaurant name and cuisine are required!')
@@ -1099,7 +1271,7 @@ def add_restaurant(request):
         Restaurant.objects.create(
             name=name,
             password=default_pwd,
-            picture=picture or 'https://images.venuebookingz.com/22886-1777034898-wm-triple_eight_bar_(9).jpg',
+            picture=picture or 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&auto=format&fit=crop&q=80',
             cuisine=cuisine,
             rating=rating,
         )
@@ -1135,7 +1307,10 @@ def update_restaurant(request, restaurant_id):
         name = request.POST.get("name", "").strip()
         picture = request.POST.get("picture", "").strip() or restaurant.picture
         cuisine = request.POST.get("cuisine", "").strip()
-        rating = float(request.POST.get("rating") or restaurant.rating)
+        try:
+            rating = float(request.POST.get("rating") or restaurant.rating)
+        except (ValueError, TypeError):
+            rating = restaurant.rating
         password = request.POST.get("password", "").strip()
         
         if name:
@@ -1178,20 +1353,25 @@ def update_menu(request, restaurant_id):
         return redirect('open_signin')
     restaurant = get_object_or_404(Restaurant, id=restaurant_id)
     
+    redirect_target = 'restaurant_home' if request.session.get('is_restaurant') else 'open_update_menu'
+
     if request.method == 'POST':
         name = request.POST.get('name', '').strip()
         description = request.POST.get('description', '').strip()
-        price = float(request.POST.get('price') or 0)
+        try:
+            price = float(request.POST.get('price') or 0)
+        except (ValueError, TypeError):
+            price = 0.0
         vegetarian = request.POST.get('vegetarian') == 'on'
         picture = request.POST.get('picture', '').strip()
         
         if not name or price <= 0:
             messages.error(request, 'Dish name and a valid price are required.')
-            return redirect('open_update_menu', restaurant_id=restaurant.id)
+            return redirect(redirect_target, restaurant_id=restaurant.id)
 
         if Item.objects.filter(restaurant=restaurant, name__iexact=name).exists():
             messages.error(request, f'Dish "{name}" is already in this restaurant menu!')
-            return redirect('open_update_menu', restaurant_id=restaurant.id)
+            return redirect(redirect_target, restaurant_id=restaurant.id)
 
         Item.objects.create(
             restaurant=restaurant,
@@ -1199,8 +1379,8 @@ def update_menu(request, restaurant_id):
             description=description,
             price=price,
             vegetarian=vegetarian,
-            picture=picture or 'https://www.indiafilings.com/learn/wp-content/uploads/2024/08/How-to-Start-Food-Business.jpg',
+            picture=picture or 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&auto=format&fit=crop&q=80',
         )
         messages.success(request, f'Dish "{name}" added to menu successfully!')
 
-    return redirect('open_update_menu', restaurant_id=restaurant.id)
+    return redirect(redirect_target, restaurant_id=restaurant.id)

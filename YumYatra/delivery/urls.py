@@ -6,9 +6,16 @@ urlpatterns = [
     path('', views.say_hello, name='say_hello'),
     path('open_signup/', views.open_signup, name='open_signup'),
     path('open_signin/', views.open_signin, name='open_signin'),
+    path('partner_signin/', views.partner_signin, name='partner_signin'),
+    path('admin_signin/', views.admin_signin, name='admin_signin'),
     path('signup/', views.signup, name='signup'),
     path('signin/', views.signin, name='signin'),
     path('logout/', views.logout_view, name='logout'),
+
+    # Delivery Address Management (Swiggy / Zomato style)
+    path('save_address/<str:username>/', views.save_address, name='save_address'),
+    path('select_address/<str:username>/<int:address_id>/', views.select_address, name='select_address'),
+    path('delete_address/<str:username>/<int:address_id>/', views.delete_address, name='delete_address'),
 
     # Customer Discovery & Ordering
     path('customer_home/', views.customer_home, name='customer_home_default'),

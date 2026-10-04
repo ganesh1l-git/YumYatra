@@ -9,24 +9,24 @@
     <style>
         .role-selector {
             display: flex;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--glass-border);
-            border-radius: 14px;
+            background: #f1f3f5;
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
             padding: 4px;
-            margin-bottom: 25px;
+            margin-bottom: 24px;
             gap: 4px;
         }
         .role-btn {
             flex: 1;
             padding: 10px 8px;
-            border-radius: 10px;
+            border-radius: 8px;
             border: none;
             background: transparent;
             color: var(--text-secondary);
             font-size: 0.9rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -35,44 +35,35 @@
             -webkit-text-fill-color: initial;
         }
         .role-btn.active {
-            background: var(--accent-gradient);
+            background: var(--accent-color);
             color: #ffffff;
-            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.35);
+            box-shadow: 0 2px 8px rgba(252, 128, 25, 0.3);
         }
         .role-btn:hover:not(.active) {
-            background: rgba(255, 255, 255, 0.08);
-            color: #ffffff;
-            transform: none;
-        }
-        .alert-box {
-            padding: 12px 16px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            font-size: 0.9rem;
-            line-height: 1.4;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .alert-error {
-            background: rgba(244, 67, 54, 0.15);
-            border: 1px solid rgba(244, 67, 54, 0.4);
-            color: #ff8a80;
-        }
-        .alert-success {
-            background: rgba(76, 175, 80, 0.15);
-            border: 1px solid rgba(76, 175, 80, 0.4);
-            color: #a5d6a7;
+            background: #e9ecef;
+            color: var(--text-primary);
         }
     </style>
 </head>
-<body>
-    <div class="app-container" style="display: flex; align-items: center; justify-content: center; min-height: 90vh;">
-        <div class="card" style="width: 100%; max-width: 520px; padding: 40px 30px; margin: 20px 0;">
-            <div style="text-align: center; margin-bottom: 25px;">
-                <span id="signup-icon" style="font-size: 2.5rem; display: block; margin-bottom: 8px;">📝</span>
-                <h2 id="signup-title" style="margin: 0 0 5px; font-size: 1.8rem;">Create Account</h2>
-                <p id="signup-desc" style="color: var(--text-secondary); font-size: 0.9rem; margin: 0 auto;">Join YumYatra for hot, delicious deliveries</p>
+<body style="background: #f8f9fa;">
+    <!-- Clean Navbar -->
+    <header class="navbar" style="margin-bottom: 20px;">
+        <div class="navbar-brand">
+            <a href="{% url 'say_hello' %}">🍕 YumYatra</a>
+        </div>
+        <div>
+            <a href="{% url 'open_signin' %}" class="btn-back">
+                &larr; Sign In
+            </a>
+        </div>
+    </header>
+
+    <div class="app-container" style="display: flex; align-items: center; justify-content: center; min-height: 75vh; padding: 20px 0;">
+        <div class="card" style="width: 100%; max-width: 480px; padding: 32px 28px; margin: 0; box-shadow: var(--shadow-md);">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <span id="signup-icon" style="font-size: 2.2rem; display: block; margin-bottom: 8px;">📝</span>
+                <h1 id="signup-title" style="margin: 0 0 6px; font-size: 1.6rem;">Create Account</h1>
+                <p id="signup-desc" style="color: var(--text-secondary); font-size: 0.88rem; margin: 0 auto;">Join YumYatra for delicious deliveries in minutes</p>
             </div>
 
             <!-- Flash Messages -->
@@ -87,113 +78,111 @@
 
             <!-- Role Selector -->
             <div class="role-selector">
-                <button type="button" class="role-btn {% if active_role != 'restaurant' %}active{% endif %}" onclick="setSignupRole('user')">
-                    👤 Customer Account
+                <button type="button" data-role="user" class="role-btn {% if active_role != 'restaurant' %}active{% endif %}" onclick="setSignupRole('user')">
+                    👤 Customer
                 </button>
-                <button type="button" class="role-btn {% if active_role == 'restaurant' %}active{% endif %}" onclick="setSignupRole('restaurant')">
-                    🏪 Restaurant Partner
+                <button type="button" data-role="restaurant" class="role-btn {% if active_role == 'restaurant' %}active{% endif %}" onclick="setSignupRole('restaurant')">
+                    🏪 Partner
                 </button>
             </div>
 
             <!-- Customer Signup Form -->
-            <form id="customer-form" action="{% url 'signup' %}" method="POST" class="auth-centered-form" style="border: none; padding: 0; background: none; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; margin: 0; max-width: 100%; {% if active_role == 'restaurant' %}display: none;{% endif %}">
+            <form id="customer-form" action="{% url 'signup' %}" method="POST" style="border: none; padding: 0; background: none; box-shadow: none; margin: 0; max-width: 100%; {% if active_role == 'restaurant' %}display: none;{% endif %}">
                 {% csrf_token %}
                 <input type="hidden" name="role" value="user">
                 
-                <div style="margin-bottom: 16px;">
-                    <label for="username" style="display: block; margin-bottom: 6px; font-size: 0.85rem; color: var(--text-secondary);">Username</label>
-                    <input type="text" id="username" name="username" placeholder="Choose a username" required style="width: 100%; padding: 11px; border-radius: 10px; border: 1px solid var(--glass-border); background: rgba(255, 255, 255, 0.03); color: white;">
+                <div style="margin-bottom: 14px;">
+                    <label for="username" style="display: block; margin-bottom: 6px; font-size: 0.85rem; font-weight: 600;">Username</label>
+                    <input type="text" id="username" name="username" placeholder="Choose a username" required style="width: 100%; padding: 11px 14px; border-radius: 8px; border: 1px solid #ced4da; font-size: 0.95rem; margin-bottom: 0;">
                 </div>
-                
-                <div style="margin-bottom: 16px;">
-                    <label for="password" style="display: block; margin-bottom: 6px; font-size: 0.85rem; color: var(--text-secondary);">Password</label>
-                    <input type="password" id="password" name="password" placeholder="Create a strong password" required style="width: 100%; padding: 11px; border-radius: 10px; border: 1px solid var(--glass-border); background: rgba(255, 255, 255, 0.03); color: white;">
+
+                <div style="margin-bottom: 14px;">
+                    <label for="email" style="display: block; margin-bottom: 6px; font-size: 0.85rem; font-weight: 600;">Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="name@example.com" required style="width: 100%; padding: 11px 14px; border-radius: 8px; border: 1px solid #ced4da; font-size: 0.95rem; margin-bottom: 0;">
                 </div>
-                
-                <div style="margin-bottom: 16px;">
-                    <label for="email" style="display: block; margin-bottom: 6px; font-size: 0.85rem; color: var(--text-secondary);">Email Address</label>
-                    <input type="email" id="email" name="email" placeholder="you@example.com" required style="width: 100%; padding: 11px; border-radius: 10px; border: 1px solid var(--glass-border); background: rgba(255, 255, 255, 0.03); color: white;">
+
+                <div style="margin-bottom: 14px;">
+                    <label for="password" style="display: block; margin-bottom: 6px; font-size: 0.85rem; font-weight: 600;">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Create a password" required style="width: 100%; padding: 11px 14px; border-radius: 8px; border: 1px solid #ced4da; font-size: 0.95rem; margin-bottom: 0;">
                 </div>
-                
-                <div style="margin-bottom: 16px;">
-                    <label for="phone" style="display: block; margin-bottom: 6px; font-size: 0.85rem; color: var(--text-secondary);">Phone Number</label>
-                    <input type="tel" id="phone" name="phone" placeholder="10-digit mobile number" required style="width: 100%; padding: 11px; border-radius: 10px; border: 1px solid var(--glass-border); background: rgba(255, 255, 255, 0.03); color: white;">
+
+                <div style="margin-bottom: 14px;">
+                    <label for="phone" style="display: block; margin-bottom: 6px; font-size: 0.85rem; font-weight: 600;">Phone Number</label>
+                    <input type="text" id="phone" name="phone" placeholder="10-digit mobile number" style="width: 100%; padding: 11px 14px; border-radius: 8px; border: 1px solid #ced4da; font-size: 0.95rem; margin-bottom: 0;">
                 </div>
-                
-                <div style="margin-bottom: 24px;">
-                    <label for="address" style="display: block; margin-bottom: 6px; font-size: 0.85rem; color: var(--text-secondary);">Delivery Address</label>
-                    <input type="text" id="address" name="address" placeholder="Flat, street, landmark details" required style="width: 100%; padding: 11px; border-radius: 10px; border: 1px solid var(--glass-border); background: rgba(255, 255, 255, 0.03); color: white;">
+
+                <div style="margin-bottom: 20px;">
+                    <label for="address" style="display: block; margin-bottom: 6px; font-size: 0.85rem; font-weight: 600;">Delivery Address</label>
+                    <textarea id="address" name="address" rows="2" placeholder="Full delivery address, flat, street..." style="width: 100%; padding: 11px 14px; border-radius: 8px; border: 1px solid #ced4da; font-size: 0.95rem; margin-bottom: 0; font-family: inherit;"></textarea>
                 </div>
-                
-                <button type="submit" style="width: 100%; padding: 14px; font-size: 1rem;">SIGN UP AS CUSTOMER</button>
+
+                <button type="submit" class="btn" style="width: 100%; padding: 12px; font-size: 0.95rem; border-radius: 8px;">CREATE CUSTOMER ACCOUNT</button>
             </form>
 
             <!-- Restaurant Signup Form -->
-            <form id="restaurant-form" action="{% url 'signup' %}" method="POST" class="auth-centered-form" style="border: none; padding: 0; background: none; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; margin: 0; max-width: 100%; {% if active_role != 'restaurant' %}display: none;{% endif %}">
+            <form id="restaurant-form" action="{% url 'signup' %}" method="POST" style="border: none; padding: 0; background: none; box-shadow: none; margin: 0; max-width: 100%; {% if active_role != 'restaurant' %}display: none;{% endif %}">
                 {% csrf_token %}
                 <input type="hidden" name="role" value="restaurant">
-                
-                <div style="margin-bottom: 16px;">
-                    <label for="rest_name" style="display: block; margin-bottom: 6px; font-size: 0.85rem; color: var(--text-secondary);">Restaurant Name</label>
-                    <input type="text" id="rest_name" name="name" placeholder="e.g., Spice Hub, Pizza Palace" required style="width: 100%; padding: 11px; border-radius: 10px; border: 1px solid var(--glass-border); background: rgba(255, 255, 255, 0.03); color: white;">
+
+                <div style="margin-bottom: 14px;">
+                    <label for="rest-name" style="display: block; margin-bottom: 6px; font-size: 0.85rem; font-weight: 600;">Restaurant Name</label>
+                    <input type="text" id="rest-name" name="name" placeholder="e.g. Royal Biryani Palace" required style="width: 100%; padding: 11px 14px; border-radius: 8px; border: 1px solid #ced4da; font-size: 0.95rem; margin-bottom: 0;">
                 </div>
-                
-                <div style="margin-bottom: 16px;">
-                    <label for="rest_password" style="display: block; margin-bottom: 6px; font-size: 0.85rem; color: var(--text-secondary);">Portal Password</label>
-                    <input type="password" id="rest_password" name="password" placeholder="Password to manage your restaurant" required style="width: 100%; padding: 11px; border-radius: 10px; border: 1px solid var(--glass-border); background: rgba(255, 255, 255, 0.03); color: white;">
+
+                <div style="margin-bottom: 14px;">
+                    <label for="rest-cuisine" style="display: block; margin-bottom: 6px; font-size: 0.85rem; font-weight: 600;">Cuisine / Food Category</label>
+                    <input type="text" id="rest-cuisine" name="cuisine" placeholder="e.g. North Indian, Biryani, Mughlai" required style="width: 100%; padding: 11px 14px; border-radius: 8px; border: 1px solid #ced4da; font-size: 0.95rem; margin-bottom: 0;">
                 </div>
-                
-                <div style="margin-bottom: 16px;">
-                    <label for="rest_cuisine" style="display: block; margin-bottom: 6px; font-size: 0.85rem; color: var(--text-secondary);">Cuisine Specialties</label>
-                    <input type="text" id="rest_cuisine" name="cuisine" placeholder="e.g., Indian, Chinese, Italian, Biryani" required style="width: 100%; padding: 11px; border-radius: 10px; border: 1px solid var(--glass-border); background: rgba(255, 255, 255, 0.03); color: white;">
+
+                <div style="margin-bottom: 14px;">
+                    <label for="rest-password" style="display: block; margin-bottom: 6px; font-size: 0.85rem; font-weight: 600;">Password (Default: Name + 123)</label>
+                    <input type="password" id="rest-password" name="password" placeholder="Leave blank to use <Name>123" style="width: 100%; padding: 11px 14px; border-radius: 8px; border: 1px solid #ced4da; font-size: 0.95rem; margin-bottom: 0;">
                 </div>
-                
-                <div style="margin-bottom: 16px;">
-                    <label for="rest_picture" style="display: block; margin-bottom: 6px; font-size: 0.85rem; color: var(--text-secondary);">Cover Image URL (optional)</label>
-                    <input type="url" id="rest_picture" name="picture" placeholder="https://..." style="width: 100%; padding: 11px; border-radius: 10px; border: 1px solid var(--glass-border); background: rgba(255, 255, 255, 0.03); color: white;">
+
+                <div style="margin-bottom: 14px;">
+                    <label for="rest-picture" style="display: block; margin-bottom: 6px; font-size: 0.85rem; font-weight: 600;">Cover Photo URL (Optional)</label>
+                    <input type="text" id="rest-picture" name="picture" placeholder="https://..." style="width: 100%; padding: 11px 14px; border-radius: 8px; border: 1px solid #ced4da; font-size: 0.95rem; margin-bottom: 0;">
                 </div>
-                
-                <div style="margin-bottom: 24px;">
-                    <label for="rest_rating" style="display: block; margin-bottom: 6px; font-size: 0.85rem; color: var(--text-secondary);">Initial Rating</label>
-                    <input type="number" id="rest_rating" name="rating" min="1" max="5" step="0.1" value="4.5" style="width: 100%; padding: 11px; border-radius: 10px; border: 1px solid var(--glass-border); background: rgba(255, 255, 255, 0.03); color: white;">
+
+                <div style="margin-bottom: 20px;">
+                    <label for="rest-rating" style="display: block; margin-bottom: 6px; font-size: 0.85rem; font-weight: 600;">Initial Rating</label>
+                    <input type="number" id="rest-rating" name="rating" value="4.5" step="0.1" min="1.0" max="5.0" style="width: 100%; padding: 11px 14px; border-radius: 8px; border: 1px solid #ced4da; font-size: 0.95rem; margin-bottom: 0;">
                 </div>
-                
-                <button type="submit" style="width: 100%; padding: 14px; font-size: 1rem;">REGISTER RESTAURANT</button>
+
+                <button type="submit" class="btn" style="width: 100%; padding: 12px; font-size: 0.95rem; border-radius: 8px;">REGISTER RESTAURANT PARTNER</button>
             </form>
-            
-            <div class="text-center mt-4" style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 20px; text-align: center;">
-                Already have an account? <a href="{% url 'open_signin' %}" style="color: var(--accent-color); font-weight: 600;">Sign In</a>
-            </div>
-            
-            <div style="text-align: center; margin-top: 15px;">
-                <a href="{% url 'say_hello' %}" style="font-size: 0.85rem; color: var(--text-secondary);">← Back to Home</a>
+
+            <div style="font-size: 0.88rem; color: var(--text-secondary); margin-top: 20px; text-align: center;">
+                Already have an account? 
+                <a href="{% url 'open_signin' %}" style="color: var(--accent-color); font-weight: 600;">Sign In</a>
             </div>
         </div>
     </div>
 
     <script>
         function setSignupRole(role) {
-            document.querySelectorAll('.role-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
+            document.querySelectorAll('.role-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('data-role') === role);
+            });
 
-            const customerForm = document.getElementById('customer-form');
-            const restaurantForm = document.getElementById('restaurant-form');
+            const custForm = document.getElementById('customer-form');
+            const restForm = document.getElementById('restaurant-form');
             const icon = document.getElementById('signup-icon');
             const title = document.getElementById('signup-title');
             const desc = document.getElementById('signup-desc');
 
             if (role === 'restaurant') {
-                customerForm.style.display = 'none';
-                restaurantForm.style.display = 'block';
+                custForm.style.display = 'none';
+                restForm.style.display = 'block';
                 icon.textContent = '🏪';
                 title.textContent = 'Partner Registration';
-                desc.textContent = 'Register your restaurant on YumYatra platform';
+                desc.textContent = 'List your eatery and start receiving orders from customers';
             } else {
-                customerForm.style.display = 'block';
-                restaurantForm.style.display = 'none';
+                custForm.style.display = 'block';
+                restForm.style.display = 'none';
                 icon.textContent = '📝';
-                title.textContent = 'Create Customer Account';
-                desc.textContent = 'Join YumYatra for hot, delicious deliveries';
+                title.textContent = 'Create Account';
+                desc.textContent = 'Join YumYatra for delicious deliveries in minutes';
             }
         }
     </script>

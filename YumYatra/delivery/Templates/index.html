@@ -4,82 +4,188 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YumYatra - Premium Food Delivery Platform</title>
+    <title>YumYatra - Order Food Online from Top Restaurants</title>
     <link rel="stylesheet" href="{% static 'premium.css' %}">
     <style>
-        .role-badge-link {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid var(--glass-border);
-            padding: 10px 18px;
+        .hero-search-box {
+            display: flex;
+            align-items: center;
+            max-width: 680px;
+            margin: 0 auto;
+            background: #ffffff;
+            border: 1.5px solid var(--card-border);
             border-radius: 12px;
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            text-decoration: none;
-            transition: all 0.3s ease;
-            -webkit-text-fill-color: initial;
+            padding: 6px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            transition: border-color 0.2s;
         }
-        .role-badge-link:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.2);
-            color: #ffffff;
+        .hero-search-box:focus-within {
+            border-color: var(--accent-color);
+        }
+        .hero-search-input {
+            flex: 1;
+            border: none !important;
+            padding: 12px 18px !important;
+            margin-bottom: 0 !important;
+            font-size: 1rem !important;
+            box-shadow: none !important;
+        }
+        .hero-search-input:focus {
+            outline: none !important;
+            box-shadow: none !important;
+        }
+        .cuisine-quick-pill {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: 12px 16px;
+            background: #ffffff;
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            box-shadow: var(--shadow-sm);
+        }
+        .cuisine-quick-pill:hover {
             transform: translateY(-2px);
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+            box-shadow: var(--shadow-md);
         }
     </style>
 </head>
 <body>
+    <!-- Brand Header -->
+    <header class="navbar">
+        <div class="navbar-brand">
+            <a href="/">🍕 YumYatra</a>
+        </div>
+        <div style="display: flex; gap: 14px; align-items: center;">
+            <a href="{% url 'partner_signin' %}" class="btn-outline" style="padding: 8px 16px; font-size: 0.88rem; border-radius: 8px; text-decoration: none;">Partner with us</a>
+            <a href="{% url 'open_signin' %}" class="btn" style="padding: 9px 22px; font-size: 0.88rem; border-radius: 8px;">Sign In</a>
+        </div>
+    </header>
+
     <div class="app-container">
-        <!-- Brand Header -->
-        <header class="navbar" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; margin-bottom: 30px; border-bottom: 1px solid var(--glass-border);">
-            <div class="navbar-brand" style="margin: 0; padding: 0; background: none;">
-                <a href="/" style="background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 1.8rem; font-family: var(--font-heading); font-weight: 800;">🍕 YumYatra</a>
-            </div>
-            <div style="display: flex; gap: 12px; align-items: center;">
-                <a href="{% url 'open_signin' %}?role=admin" style="font-size: 0.85rem; color: #94a3b8; text-decoration: none; padding: 6px 12px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.08); -webkit-text-fill-color: #94a3b8;">🛡️ Admin</a>
-                <a href="{% url 'open_signin' %}?role=restaurant" style="font-size: 0.85rem; color: #94a3b8; text-decoration: none; padding: 6px 12px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.08); -webkit-text-fill-color: #94a3b8;">🏪 Partner</a>
-                <a href="{% url 'open_signin' %}?role=user" class="btn" style="padding: 8px 20px; font-size: 0.85rem;">Sign In</a>
-            </div>
-        </header>
-
         <!-- Hero Section -->
-        <section class="hero" style="padding: 50px 20px 40px; text-align: center;">
-            <h1 style="text-align: center; margin-bottom: 18px; font-size: 3rem;">Where you find the true taste 🍕</h1>
-            <p style="max-width: 680px; margin: 0 auto 30px; text-align: center; padding: 0 20px; line-height: 1.6; color: var(--text-secondary); font-size: 1.2rem; display: block;">
-                Order delicious meals from your favorite restaurants and get them delivered hot & fresh to your doorstep in minutes!
+        <section class="hero" style="padding: 60px 20px 45px; text-align: center; margin-top: 10px;">
+            <h1 style="font-size: 3rem; margin-bottom: 12px; color: #1c1c24;">Order food from top restaurants near you 🍕</h1>
+            <p style="color: var(--text-secondary); font-size: 1.15rem; max-width: 600px; margin: 0 auto 30px;">
+                Taste the best dishes delivered fresh and fast right to your doorstep.
             </p>
-            
-            <div class="flex justify-center gap-4 mt-4" style="flex-wrap: wrap;">
-                <a href="{% url 'open_signin' %}?role=user" class="btn" style="padding: 14px 34px; font-size: 1.1rem; border-radius: 12px;">Sign In to Order 🛒</a>
-                <a href="{% url 'open_signup' %}?role=user" style="background: transparent; border: 2px solid var(--accent-color); color: var(--accent-color); padding: 12px 32px; font-size: 1.1rem; border-radius: 12px; font-weight: 600; text-decoration: none; display: inline-block; -webkit-text-fill-color: var(--accent-color); transition: all 0.3s;" onmouseover="this.style.background='var(--accent-gradient)'; this.style.color='#ffffff'; this.style.borderColor='transparent'; this.style.webkitTextFillColor='#ffffff';" onmouseout="this.style.background='transparent'; this.style.color='var(--accent-color)'; this.style.borderColor='var(--accent-color)'; this.style.webkitTextFillColor='var(--accent-color)';">Create Account</a>
-            </div>
 
-            <!-- Portal Shortcuts -->
-            <div style="display: flex; justify-content: center; gap: 12px; margin-top: 35px; flex-wrap: wrap;">
-                <a href="{% url 'open_signin' %}?role=user" class="role-badge-link">👤 Customer Login</a>
-                <a href="{% url 'open_signin' %}?role=restaurant" class="role-badge-link">🏪 Restaurant Partner Login</a>
-                <a href="{% url 'open_signin' %}?role=admin" class="role-badge-link">🛡️ Administrator Login</a>
+            <!-- Clean Search Bar -->
+            <form action="{% url 'open_signin' %}" method="GET" class="hero-search-box" style="margin-bottom: 35px;">
+                <input type="hidden" name="role" value="user">
+                <span style="padding-left: 12px; font-size: 1.2rem;">📍</span>
+                <input type="text" name="location" class="hero-search-input" placeholder="Enter your delivery location or search restaurant...">
+                <button type="submit" class="btn" style="padding: 12px 28px; border-radius: 8px; font-size: 0.95rem;">
+                    Find Food
+                </button>
+            </form>
+
+            <!-- Popular Quick Categories -->
+            <div style="display: flex; justify-content: center; gap: 14px; flex-wrap: wrap;">
+                <a href="{% url 'open_signin' %}?role=user" class="cuisine-quick-pill">
+                    <span style="font-size: 1.8rem;">🍕</span>
+                    <span>Pizza</span>
+                </a>
+                <a href="{% url 'open_signin' %}?role=user" class="cuisine-quick-pill">
+                    <span style="font-size: 1.8rem;">🍔</span>
+                    <span>Burgers</span>
+                </a>
+                <a href="{% url 'open_signin' %}?role=user" class="cuisine-quick-pill">
+                    <span style="font-size: 1.8rem;">🍲</span>
+                    <span>Biryani</span>
+                </a>
+                <a href="{% url 'open_signin' %}?role=user" class="cuisine-quick-pill">
+                    <span style="font-size: 1.8rem;">🍜</span>
+                    <span>Noodles</span>
+                </a>
+                <a href="{% url 'open_signin' %}?role=user" class="cuisine-quick-pill">
+                    <span style="font-size: 1.8rem;">🍰</span>
+                    <span>Desserts</span>
+                </a>
+                <a href="{% url 'open_signin' %}?role=user" class="cuisine-quick-pill">
+                    <span style="font-size: 1.8rem;">🥗</span>
+                    <span>Healthy</span>
+                </a>
             </div>
         </section>
-        
-        <!-- Feature Cards -->
-        <div class="grid" style="margin-top: 20px;">
-            <div class="card-premium text-center" style="padding: 30px;">
-                <div style="font-size: 3rem; margin-bottom: 15px;">⚡</div>
-                <h3 class="card-title" style="text-align: center; margin-bottom: 10px;">Super Fast Delivery</h3>
-                <p style="color: var(--text-secondary); font-size: 0.9rem;">Your food will be delivered in minutes, hot and fresh.</p>
+
+        <!-- Featured Restaurants Section -->
+        {% if featured_restaurants %}
+        <div style="margin-bottom: 45px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div>
+                    <h2 style="font-size: 1.5rem; margin-bottom: 4px; text-align: left;">Top Rated Restaurants</h2>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0;">Featured restaurants with the best customer ratings</p>
+                </div>
+                <a href="{% url 'open_signin' %}?role=user" style="font-size: 0.92rem; font-weight: 600;">See all &rarr;</a>
             </div>
-            
-            <div class="card-premium text-center" style="padding: 30px;">
-                <div style="font-size: 3rem; margin-bottom: 15px;">🍲</div>
-                <h3 class="card-title" style="text-align: center; margin-bottom: 10px;">Top Restaurants</h3>
-                <p style="color: var(--text-secondary); font-size: 0.9rem;">Choose from a curation of the best eateries around you.</p>
-            </div>
-            
-            <div class="card-premium text-center" style="padding: 30px;">
-                <div style="font-size: 3rem; margin-bottom: 15px;">💳</div>
-                <h3 class="card-title" style="text-align: center; margin-bottom: 10px;">Secure Payments</h3>
-                <p style="color: var(--text-secondary); font-size: 0.9rem;">Seamless checkout options including Razorpay and Cash on Delivery.</p>
+
+            <div class="grid" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px;">
+                {% for r in featured_restaurants %}
+                <a href="{% url 'open_signin' %}?role=user" class="restaurant-card" style="display: flex; flex-direction: column; height: 100%;">
+                    <div class="card-image-wrapper">
+                        <img src="{{ r.picture }}" alt="{{ r.name }}" loading="lazy" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&auto=format&fit=crop&q=80';">
+                        <div style="position: absolute; bottom: 10px; left: 10px; background: rgba(0, 0, 0, 0.75); color: white; padding: 4px 10px; border-radius: 6px; font-size: 0.78rem; font-weight: 700;">
+                            50% OFF UPTO ₹100
+                        </div>
+                    </div>
+                    <div class="card-content" style="display: flex; flex-direction: column; flex: 1; padding: 16px 18px 18px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; gap: 8px;">
+                            <h3 class="card-title" style="margin-bottom: 0; font-size: 1.15rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 190px;" title="{{ r.name }}">{{ r.name }}</h3>
+                            <span class="badge-rating" style="flex-shrink: 0;">★ {{ r.rating }}</span>
+                        </div>
+                        <div class="card-cuisine" style="margin-bottom: 14px; font-size: 0.88rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ r.cuisine }}">{{ r.cuisine }}</div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: var(--text-secondary); border-top: 1px solid var(--card-border); padding-top: 12px; margin-top: auto;">
+                            <span>⚡ 25-35 mins</span>
+                            <span style="font-weight: 600; color: var(--accent-color);">Order Now &rarr;</span>
+                        </div>
+                    </div>
+                </a>
+                {% endfor %}
             </div>
         </div>
+        {% endif %}
+
+        <!-- Three Value Pillars -->
+        <div class="grid" style="margin-bottom: 50px;">
+            <div style="background: #ffffff; border: 1px solid var(--card-border); border-radius: 16px; padding: 26px; text-align: center; box-shadow: var(--shadow-sm);">
+                <div style="font-size: 2.4rem; margin-bottom: 12px;">⚡</div>
+                <h3 style="font-size: 1.15rem; margin-bottom: 8px;">Super Fast Delivery</h3>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5; margin: 0;">Hot meals delivered to your doorstep in minutes, guaranteed.</p>
+            </div>
+            
+            <div style="background: #ffffff; border: 1px solid var(--card-border); border-radius: 16px; padding: 26px; text-align: center; box-shadow: var(--shadow-sm);">
+                <div style="font-size: 2.4rem; margin-bottom: 12px;">🍲</div>
+                <h3 style="font-size: 1.15rem; margin-bottom: 8px;">Verified Restaurants</h3>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5; margin: 0;">Carefully selected restaurants with hygiene ratings and real reviews.</p>
+            </div>
+            
+            <div style="background: #ffffff; border: 1px solid var(--card-border); border-radius: 16px; padding: 26px; text-align: center; box-shadow: var(--shadow-sm);">
+                <div style="font-size: 2.4rem; margin-bottom: 12px;">🔒</div>
+                <h3 style="font-size: 1.15rem; margin-bottom: 8px;">Safe & Secure</h3>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5; margin: 0;">Multiple payment options including Razorpay and Cash on Delivery.</p>
+            </div>
+        </div>
+
+        <!-- Clean Footer with portal links neatly placed at bottom -->
+        <footer style="border-top: 1px solid var(--card-border); padding-top: 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; color: var(--text-secondary); font-size: 0.85rem;">
+            <div>
+                © 2026 YumYatra Technologies. All rights reserved.
+            </div>
+            <div style="display: flex; gap: 16px;">
+                <a href="{% url 'open_signin' %}" style="color: var(--text-secondary);">Customer Login</a>
+                <a href="{% url 'partner_signin' %}" style="color: var(--text-secondary);">Restaurant Partner</a>
+                <a href="{% url 'admin_signin' %}" style="color: var(--text-secondary);">Admin Portal</a>
+            </div>
+        </footer>
     </div>
 </body>
 </html>

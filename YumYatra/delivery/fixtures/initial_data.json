@@ -1,470 +1,1499 @@
 [
-  {
-    "model": "delivery.restaurant",
-    "pk": 5,
-    "fields": {
-      "name": "The Pizza Oven",
-      "password": "The Pizza Oven123",
-      "picture": "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600&auto=format&fit=crop&q=80",
-      "cuisine": "Italian, Pizzas, Fast Food",
-      "rating": 4.8
-    }
-  },
-  {
-    "model": "delivery.restaurant",
-    "pk": 6,
-    "fields": {
-      "name": "Royal Biryani House",
-      "password": "Royal Biryani House123",
-      "picture": "https://images.unsplash.com/photo-1589302168068-964664d93dc0?w=600&auto=format&fit=crop&q=80",
-      "cuisine": "Biryani, Mughlai, North Indian",
-      "rating": 4.7
-    }
-  },
-  {
-    "model": "delivery.restaurant",
-    "pk": 7,
-    "fields": {
-      "name": "Burger & Co.",
-      "password": "Burger & Co.123",
-      "picture": "https://images.unsplash.com/photo-1550547660-d9450f859349?w=600&auto=format&fit=crop&q=80",
-      "cuisine": "Burgers, American, Fast Food",
-      "rating": 4.6
-    }
-  },
-  {
-    "model": "delivery.restaurant",
-    "pk": 8,
-    "fields": {
-      "name": "Dosa Corner",
-      "password": "Dosa Corner123",
-      "picture": "https://images.unsplash.com/photo-1668236543090-82eba5ee5976?w=600&auto=format&fit=crop&q=80",
-      "cuisine": "South Indian, Tiffins, Breakfast",
-      "rating": 4.9
-    }
-  },
-  {
-    "model": "delivery.restaurant",
-    "pk": 9,
-    "fields": {
-      "name": "Wok & Roll Asian",
-      "password": "Wok & Roll Asian123",
-      "picture": "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=600&auto=format&fit=crop&q=80",
-      "cuisine": "Chinese, Asian, Noodles, Dimsums",
-      "rating": 4.5
-    }
-  },
-  {
-    "model": "delivery.restaurant",
-    "pk": 10,
-    "fields": {
-      "name": "Sweet Treats Bakery",
-      "password": "Sweet Treats Bakery123",
-      "picture": "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600&auto=format&fit=crop&q=80",
-      "cuisine": "Bakery, Desserts, Cakes",
-      "rating": 4.8
-    }
-  },
-  {
-    "model": "delivery.item",
-    "pk": 13,
-    "fields": {
-      "restaurant": 5,
-      "name": "Classic Margherita Pizza",
-      "description": "Fresh mozzarella, basil leaves, San Marzano tomato sauce on wood-fired crust.",
-      "price": 299.0,
-      "vegetarian": true,
-      "picture": "https://images.unsplash.com/photo-1604382355076-af4b0eb60143?w=600&auto=format&fit=crop&q=80"
-    }
-  },
-  {
-    "model": "delivery.item",
-    "pk": 14,
-    "fields": {
-      "restaurant": 5,
-      "name": "Farmhouse Veggie Delight",
-      "description": "Loaded with capsicum, black olives, sweet corn, mushrooms, and onion.",
-      "price": 389.0,
-      "vegetarian": true,
-      "picture": "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=600&auto=format&fit=crop&q=80"
-    }
-  },
-  {
-    "model": "delivery.item",
-    "pk": 15,
-    "fields": {
-      "restaurant": 5,
-      "name": "Spicy Pepperoni & Salami",
-      "description": "Zesty smoked pepperoni slices with melted cheddar and mozzarella blend.",
-      "price": 449.0,
-      "vegetarian": false,
-      "picture": "https://images.unsplash.com/photo-1628840042765-356cda07504e?w=600&auto=format&fit=crop&q=80"
-    }
-  },
-  {
-    "model": "delivery.item",
-    "pk": 16,
-    "fields": {
-      "restaurant": 5,
-      "name": "BBQ Smoked Chicken Pizza",
-      "description": "Tender grilled barbecue chicken with caramelized onions and smokey glaze.",
-      "price": 429.0,
-      "vegetarian": false,
-      "picture": "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&auto=format&fit=crop&q=80"
-    }
-  },
-  {
-    "model": "delivery.item",
-    "pk": 17,
-    "fields": {
-      "restaurant": 5,
-      "name": "Garlic Parmesan Breadsticks",
-      "description": "Golden-baked soft dough sticks brushed with herb garlic butter.",
-      "price": 149.0,
-      "vegetarian": true,
-      "picture": "/static/garlic_breadsticks.jpg"
-    }
-  },
-  {
-    "model": "delivery.item",
-    "pk": 18,
-    "fields": {
-      "restaurant": 6,
-      "name": "Hyderabadi Chicken Dum Biryani",
-      "description": "Slow-cooked aromatic basmati rice layered with succulent spiced chicken and saffron.",
-      "price": 349.0,
-      "vegetarian": false,
-      "picture": "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=600&auto=format&fit=crop&q=80"
-    }
-  },
-  {
-    "model": "delivery.item",
-    "pk": 19,
-    "fields": {
-      "restaurant": 6,
-      "name": "Mutton Gosh Dum Biryani",
-      "description": "Tender lamb cuts marinated in royal spices and dum-cooked with long grain rice.",
-      "price": 489.0,
-      "vegetarian": false,
-      "picture": "https://images.unsplash.com/photo-1633945274405-b6c8069047b0?w=600&auto=format&fit=crop&q=80"
-    }
-  },
-  {
-    "model": "delivery.item",
-    "pk": 20,
-    "fields": {
-      "restaurant": 6,
-      "name": "Shahi Paneer Dum Biryani",
-      "description": "Marinated cottage cheese cubes layered with caramelized onions and saffron basmati rice.",
-      "price": 289.0,
-      "vegetarian": true,
-      "picture": "https://images.unsplash.com/photo-1645177628172-a94c1f96e6db?w=600&auto=format&fit=crop&q=80"
-    }
-  },
-  {
-    "model": "delivery.item",
-    "pk": 21,
-    "fields": {
-      "restaurant": 6,
-      "name": "Spicy Andhra Chicken 65",
-      "description": "Crispy deep-fried boneless chicken tossed with curry leaves, chili, and yogurt masala.",
-      "price": 249.0,
-      "vegetarian": false,
-      "picture": "https://images.unsplash.com/photo-1610057099443-fde8c4d50f91?w=600&auto=format&fit=crop&q=80"
-    }
-  },
-  {
-    "model": "delivery.item",
-    "pk": 22,
-    "fields": {
-      "restaurant": 6,
-      "name": "Mirchi Ka Salan & Raita",
-      "description": "Traditional peanut sesame chili gravy paired with cool mint cucumber raita.",
-      "price": 89.0,
-      "vegetarian": true,
-      "picture": "https://images.unsplash.com/photo-1596797038530-2c107229654b?w=600&auto=format&fit=crop&q=80"
-    }
-  },
-  {
-    "model": "delivery.item",
-    "pk": 23,
-    "fields": {
-      "restaurant": 7,
-      "name": "Double Smash Cheeseburger",
-      "description": "Two smashed beef patties, melted American cheddar, grilled onions, and house sauce.",
-      "price": 259.0,
-      "vegetarian": false,
-      "picture": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&auto=format&fit=crop&q=80"
-    }
-  },
-  {
-    "model": "delivery.item",
-    "pk": 24,
-    "fields": {
-      "restaurant": 7,
-      "name": "Nashville Hot Crispy Chicken",
-      "description": "Spicy crispy fried chicken breast, chipotle mayo, crunchy lettuce, and pickles.",
-      "price": 229.0,
-      "vegetarian": false,
-      "picture": "https://images.unsplash.com/photo-1625813506062-0aeb1d7a094b?w=600&auto=format&fit=crop&q=80"
-    }
-  },
-  {
-    "model": "delivery.item",
-    "pk": 25,
-    "fields": {
-      "restaurant": 7,
-      "name": "Mushroom Melt Veggie Burger",
-      "description": "Crispy spiced vegetable patty topped with melted cheddar, fresh tomato, and secret sauce.",
-      "price": 189.0,
-      "vegetarian": true,
-      "picture": "https://images.unsplash.com/photo-1520072959219-c595dc870360?w=600&auto=format&fit=crop&q=80"
-    }
-  },
-  {
-    "model": "delivery.item",
-    "pk": 26,
-    "fields": {
-      "restaurant": 7,
-      "name": "Truffle Parmesan Fries",
-      "description": "Golden potato fries drizzled with truffle oil and freshly grated parmesan.",
-      "price": 139.0,
-      "vegetarian": true,
-      "picture": "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=600&auto=format&fit=crop&q=80"
-    }
-  },
-  {
-    "model": "delivery.item",
-    "pk": 27,
-    "fields": {
-      "restaurant": 7,
-      "name": "Belgian Chocolate Shake",
-      "description": "Thick rich chocolate milkshake topped with dark chocolate curls.",
-      "price": 149.0,
-      "vegetarian": true,
-      "picture": "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=600&auto=format&fit=crop&q=80"
-    }
-  },
-  {
-    "model": "delivery.item",
-    "pk": 28,
-    "fields": {
-      "restaurant": 8,
-      "name": "Ghee Podi Masala Dosa",
-      "description": "Crispy golden crepe roasted with desi ghee and spiced gun powder, stuffed with potato masala.",
-      "price": 149.0,
-      "vegetarian": true,
-      "picture": "https://images.unsplash.com/photo-1668236543090-82eba5ee5976?w=600&auto=format&fit=crop&q=80"
-    }
-  },
-  {
-    "model": "delivery.item",
-    "pk": 29,
-    "fields": {
-      "restaurant": 8,
-      "name": "Mysore Butter Masala Dosa",
-      "description": "Spicy red garlic chutney spread inside a buttery crisp dosa with seasoned mashed potatoes.",
-      "price": 169.0,
-      "vegetarian": true,
-      "picture": "https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=600&auto=format&fit=crop&q=80"
-    }
-  },
-  {
-    "model": "delivery.item",
-    "pk": 30,
-    "fields": {
-      "restaurant": 8,
-      "name": "Steamed Button Ghee Idlis",
-      "description": "Mini soft rice cakes soaked in piping hot sambar with coconut & tomato chutneys.",
-      "price": 99.0,
-      "vegetarian": true,
-      "picture": "https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=600&auto=format&fit=crop&q=80"
-    }
-  },
-  {
-    "model": "delivery.item",
-    "pk": 31,
-    "fields": {
-      "restaurant": 8,
-      "name": "Crispy Medu Vada (2 pcs)",
-      "description": "Deep-fried crispy lentil doughnuts with crushed black pepper and ginger.",
-      "price": 89.0,
-      "vegetarian": true,
-      "picture": "https://images.unsplash.com/photo-1601050690597-df0568f70950?w=600&auto=format&fit=crop&q=80"
-    }
-  },
-  {
-    "model": "delivery.item",
-    "pk": 32,
-    "fields": {
-      "restaurant": 8,
-      "name": "Madras Filter Coffee",
-      "description": "Freshly brewed aromatic chicory-infused South Indian filter coffee with frothy milk.",
-      "price": 49.0,
-      "vegetarian": true,
-      "picture": "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=600&auto=format&fit=crop&q=80"
-    }
-  },
-  {
-    "model": "delivery.item",
-    "pk": 33,
-    "fields": {
-      "restaurant": 9,
-      "name": "Schezwan Chicken Hakka Noodles",
-      "description": "Wok-tossed noodles with spicy schezwan sauce, bell peppers, and shredded chicken.",
-      "price": 249.0,
-      "vegetarian": false,
-      "picture": "https://images.unsplash.com/photo-1585032226651-759b368d7246?w=600&auto=format&fit=crop&q=80"
-    }
-  },
-  {
-    "model": "delivery.item",
-    "pk": 34,
-    "fields": {
-      "restaurant": 9,
-      "name": "Chilli Garlic Fried Rice",
-      "description": "Fragrant jasmine rice tossed with burnt garlic, spring onions, and oriental herbs.",
-      "price": 209.0,
-      "vegetarian": true,
-      "picture": "https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=600&auto=format&fit=crop&q=80"
-    }
-  },
-  {
-    "model": "delivery.item",
-    "pk": 35,
-    "fields": {
-      "restaurant": 9,
-      "name": "Steamed Chicken Dimsums (6 pcs)",
-      "description": "Delicate dumplings filled with seasoned minced chicken, served with spicy dip.",
-      "price": 239.0,
-      "vegetarian": false,
-      "picture": "https://images.unsplash.com/photo-1496116218417-1a781b1c416c?w=600&auto=format&fit=crop&q=80"
-    }
-  },
-  {
-    "model": "delivery.item",
-    "pk": 36,
-    "fields": {
-      "restaurant": 9,
-      "name": "Kung Pao Crispy Tofu",
-      "description": "Crispy golden tofu cubes stir-fried with roasted peanuts, dried chilies, and scallions.",
-      "price": 219.0,
-      "vegetarian": true,
-      "picture": "https://images.unsplash.com/photo-1525755662778-989d0524087e?w=600&auto=format&fit=crop&q=80"
-    }
-  },
-  {
-    "model": "delivery.item",
-    "pk": 37,
-    "fields": {
-      "restaurant": 10,
-      "name": "Belgian Chocolate Lava Cake",
-      "description": "Gooey warm chocolate cake with molten chocolate core in the center.",
-      "price": 149.0,
-      "vegetarian": true,
-      "picture": "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=600&auto=format&fit=crop&q=80"
-    }
-  },
-  {
-    "model": "delivery.item",
-    "pk": 38,
-    "fields": {
-      "restaurant": 10,
-      "name": "New York Blueberry Cheesecake",
-      "description": "Classic creamy baked cheesecake on graham cracker crust with wild blueberry compote.",
-      "price": 199.0,
-      "vegetarian": true,
-      "picture": "https://images.unsplash.com/photo-1533134242443-d4fd215305ad?w=600&auto=format&fit=crop&q=80"
-    }
-  },
-  {
-    "model": "delivery.item",
-    "pk": 39,
-    "fields": {
-      "restaurant": 10,
-      "name": "Red Velvet Slice",
-      "description": "Velvety sponge layered with rich whipped cream cheese frosting.",
-      "price": 129.0,
-      "vegetarian": true,
-      "picture": "https://images.unsplash.com/photo-1586985289688-ca3cf47d3e6e?w=600&auto=format&fit=crop&q=80"
-    }
-  },
-  {
-    "model": "delivery.coupon",
-    "pk": 1,
-    "fields": {
-      "code": "FIRSTBITE",
-      "description": "50% OFF up to ₹120 on your order",
-      "discount_percent": 50.0,
-      "flat_discount": 0.0,
-      "min_order_value": 199.0,
-      "max_discount": 120.0,
-      "is_free_delivery": false,
-      "is_active": true
-    }
-  },
-  {
-    "model": "delivery.coupon",
-    "pk": 2,
-    "fields": {
-      "code": "YUM20",
-      "description": "20% OFF up to ₹80 on any meal",
-      "discount_percent": 20.0,
-      "flat_discount": 0.0,
-      "min_order_value": 149.0,
-      "max_discount": 80.0,
-      "is_free_delivery": false,
-      "is_active": true
-    }
-  },
-  {
-    "model": "delivery.coupon",
-    "pk": 3,
-    "fields": {
-      "code": "FREEDEL",
-      "description": "Free Delivery on orders above ₹99",
-      "discount_percent": 0.0,
-      "flat_discount": 0.0,
-      "min_order_value": 99.0,
-      "max_discount": 0.0,
-      "is_free_delivery": true,
-      "is_active": true
-    }
-  },
-  {
-    "model": "delivery.coupon",
-    "pk": 4,
-    "fields": {
-      "code": "FEAST100",
-      "description": "Flat ₹100 OFF on orders above ₹399",
-      "discount_percent": 0.0,
-      "flat_discount": 100.0,
-      "min_order_value": 399.0,
-      "max_discount": 0.0,
-      "is_free_delivery": false,
-      "is_active": true
-    }
-  },
-  {
-    "model": "delivery.customer",
-    "pk": 1,
-    "fields": {
-      "username": "ganesh_k",
-      "password": "ganesh",
-      "email": "ganesh@gmail.com",
-      "phone": "9347561849",
-      "address": "kasthuri kandriga 4-3a"
-    }
-  },
-  {
-    "model": "delivery.customer",
-    "pk": 2,
-    "fields": {
-      "username": "g",
-      "password": "g123",
-      "email": "g@gmail.com",
-      "phone": "1234567890",
-      "address": "kasthuri kandriga 4-3a"
-    }
+{
+  "model": "delivery.restaurant",
+  "pk": 24,
+  "fields": {
+    "name": "Domino's Pizza",
+    "password": "Domino's Pizza123",
+    "picture": "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600&auto=format&fit=crop&q=80",
+    "cuisine": "Pizzas, Italian, Pastas, Fast Food",
+    "rating": 4.4
   }
+},
+{
+  "model": "delivery.restaurant",
+  "pk": 25,
+  "fields": {
+    "name": "Behrouz Biryani",
+    "password": "Behrouz Biryani123",
+    "picture": "https://images.unsplash.com/photo-1589302168068-964664d93dc0?w=600&auto=format&fit=crop&q=80",
+    "cuisine": "Royal Biryani, Mughlai, Kebabs, North Indian",
+    "rating": 4.6
+  }
+},
+{
+  "model": "delivery.restaurant",
+  "pk": 26,
+  "fields": {
+    "name": "Burger King",
+    "password": "Burger King123",
+    "picture": "https://images.unsplash.com/photo-1550547660-d9450f859349?w=600&auto=format&fit=crop&q=80",
+    "cuisine": "Burgers, American, Fast Food, Beverages",
+    "rating": 4.3
+  }
+},
+{
+  "model": "delivery.restaurant",
+  "pk": 27,
+  "fields": {
+    "name": "Haldiram's Sweets & Snacks",
+    "password": "Haldiram's Sweets & Snacks123",
+    "picture": "https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?w=600&auto=format&fit=crop&q=80",
+    "cuisine": "North Indian, Chaat, Mithai, Thali",
+    "rating": 4.5
+  }
+},
+{
+  "model": "delivery.restaurant",
+  "pk": 28,
+  "fields": {
+    "name": "Saravanaa Bhavan",
+    "password": "Saravanaa Bhavan123",
+    "picture": "https://images.unsplash.com/photo-1668236543090-82eba5ee5976?w=600&auto=format&fit=crop&q=80",
+    "cuisine": "South Indian, Dosas, Idlis, Breakfast",
+    "rating": 4.7
+  }
+},
+{
+  "model": "delivery.restaurant",
+  "pk": 29,
+  "fields": {
+    "name": "WOW! Momo",
+    "password": "WOW! Momo123",
+    "picture": "https://images.unsplash.com/photo-1625220194771-7ebdea0b70b9?w=600&auto=format&fit=crop&q=80",
+    "cuisine": "Tibetan, Momos, Asian, Fast Food",
+    "rating": 4.4
+  }
+},
+{
+  "model": "delivery.restaurant",
+  "pk": 30,
+  "fields": {
+    "name": "Subway",
+    "password": "Subway123",
+    "picture": "https://images.unsplash.com/photo-1554433607-66b5efe9d304?w=600&auto=format&fit=crop&q=80",
+    "cuisine": "Healthy Food, Salads, Sandwiches, Wraps",
+    "rating": 4.3
+  }
+},
+{
+  "model": "delivery.restaurant",
+  "pk": 31,
+  "fields": {
+    "name": "Paradise Biryani",
+    "password": "Paradise Biryani123",
+    "picture": "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=600&auto=format&fit=crop&q=80",
+    "cuisine": "Hyderabadi Biryani, Kebabs, Mughlai",
+    "rating": 4.5
+  }
+},
+{
+  "model": "delivery.restaurant",
+  "pk": 32,
+  "fields": {
+    "name": "Baskin Robbins",
+    "password": "Baskin Robbins123",
+    "picture": "https://images.unsplash.com/photo-1501443762994-82bd5dace89a?w=600&auto=format&fit=crop&q=80",
+    "cuisine": "Ice Cream, Desserts, Sundaes, Waffles",
+    "rating": 4.7
+  }
+},
+{
+  "model": "delivery.restaurant",
+  "pk": 33,
+  "fields": {
+    "name": "Chai Point",
+    "password": "Chai Point123",
+    "picture": "https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=600&auto=format&fit=crop&q=80",
+    "cuisine": "Chai, Beverages, Snacks, Breakfast",
+    "rating": 4.4
+  }
+},
+{
+  "model": "delivery.restaurant",
+  "pk": 34,
+  "fields": {
+    "name": "Punjab Grill",
+    "password": "Punjab Grill123",
+    "picture": "https://images.unsplash.com/photo-1610057099431-d73a1c9d2f2f?w=600&auto=format&fit=crop&q=80",
+    "cuisine": "Authentic North Indian, Tandoori, Curries",
+    "rating": 4.6
+  }
+},
+{
+  "model": "delivery.restaurant",
+  "pk": 35,
+  "fields": {
+    "name": "Mainland China",
+    "password": "Mainland China123",
+    "picture": "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=600&auto=format&fit=crop&q=80",
+    "cuisine": "Chinese, Pan-Asian, Dim Sum, Noodles",
+    "rating": 4.5
+  }
+},
+{
+  "model": "delivery.restaurant",
+  "pk": 36,
+  "fields": {
+    "name": "Taco Bell",
+    "password": "Taco Bell123",
+    "picture": "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=600&auto=format&fit=crop&q=80",
+    "cuisine": "Mexican, Tacos, Burritos, Quesadillas",
+    "rating": 4.2
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 144,
+  "fields": {
+    "restaurant": 24,
+    "name": "Margherita Pizza",
+    "description": "Classic delight with 100% real mozzarella cheese on signature freshly hand-stretched crust.",
+    "price": 239.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1604382355076-af4b0eb60143?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 145,
+  "fields": {
+    "restaurant": 24,
+    "name": "Farmhouse Pizza",
+    "description": "Delightful combination of onion, capsicum, tomato & grilled mushroom on herbed tomato concasse.",
+    "price": 399.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 146,
+  "fields": {
+    "restaurant": 24,
+    "name": "Peppy Paneer Pizza",
+    "description": "Flavorful trio of juicy paneer chunks, crisp capsicum with spicy red paprika on melted mozzarella.",
+    "price": 439.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 147,
+  "fields": {
+    "restaurant": 24,
+    "name": "Pepper Barbecue Chicken Pizza",
+    "description": "Pepper barbecue chicken for that flavorful, smoky kick with a generous layer of mozzarella cheese.",
+    "price": 449.0,
+    "vegetarian": false,
+    "picture": "https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 148,
+  "fields": {
+    "restaurant": 24,
+    "name": "Chicken Sausage Pizza",
+    "description": "American classic loaded with succulent chicken sausages and zesty herb seasoned tomato sauce.",
+    "price": 349.0,
+    "vegetarian": false,
+    "picture": "https://images.unsplash.com/photo-1628840042765-356cda07504e?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 149,
+  "fields": {
+    "restaurant": 24,
+    "name": "Garlic Breadsticks",
+    "description": "Baked to golden perfection with roasted garlic butter, aromatic oregano and signature seasoning.",
+    "price": 129.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1619895092538-128341789043?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 150,
+  "fields": {
+    "restaurant": 24,
+    "name": "Stuffed Garlic Bread",
+    "description": "Freshly baked garlic bread stuffed with melted mozzarella cheese, sweet corn and spicy jalapenos.",
+    "price": 169.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1509722747041-616f39b57569?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 151,
+  "fields": {
+    "restaurant": 24,
+    "name": "Choco Lava Cake",
+    "description": "Indulgent warm chocolate cake with a rich molten chocolate center flowing out with every bite.",
+    "price": 109.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 152,
+  "fields": {
+    "restaurant": 25,
+    "name": "Hyderabadi Lazeez Bhuna Murgh Biryani",
+    "description": "Tender chicken cooked in aromatic spices, layered with long-grain saffron basmati and caramelized onions.",
+    "price": 385.0,
+    "vegetarian": false,
+    "picture": "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 153,
+  "fields": {
+    "restaurant": 25,
+    "name": "Dum Gosht Biryani",
+    "description": "Succulent pieces of fresh mutton slow-cooked on dum with royal saffron basmati rice and secret spices.",
+    "price": 495.0,
+    "vegetarian": false,
+    "picture": "https://images.unsplash.com/photo-1633945274405-b6c8069047b0?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 154,
+  "fields": {
+    "restaurant": 25,
+    "name": "Murgh Tikka Biryani",
+    "description": "Smoky boneless chicken tikka chunks layered with rich spiced royal biryani rice and fresh mint.",
+    "price": 399.0,
+    "vegetarian": false,
+    "picture": "https://images.unsplash.com/photo-1599488615731-7e5c2823ff28?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 155,
+  "fields": {
+    "restaurant": 25,
+    "name": "Subz-e-Biryani",
+    "description": "Royal vegetable medley of carrots, green beans, cauliflower and paneer dum-cooked in fragrant spices.",
+    "price": 295.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1645177628172-a94c1f96e6db?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 156,
+  "fields": {
+    "restaurant": 25,
+    "name": "Zaikedaar Paneer Biryani",
+    "description": "Soft marinated paneer cubes layered with saffron infused fragrant long-grain basmati and golden cashews.",
+    "price": 345.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 157,
+  "fields": {
+    "restaurant": 25,
+    "name": "Angara Murgh Tikka",
+    "description": "Boneless chicken marinated in fiery red spices and grilled to perfection in a charcoal tandoor.",
+    "price": 285.0,
+    "vegetarian": false,
+    "picture": "https://images.unsplash.com/photo-1610057099431-d73a1c9d2f2f?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 158,
+  "fields": {
+    "restaurant": 25,
+    "name": "Hara Bhara Kebab",
+    "description": "Spinach, green peas and spiced potato patties lightly pan-fried crisp and served with tangy mint chutney.",
+    "price": 215.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 159,
+  "fields": {
+    "restaurant": 25,
+    "name": "Shahi Matka Phirni",
+    "description": "Traditional slow-cooked ground rice dessert infused with saffron, green cardamom, pistachios and almonds.",
+    "price": 115.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1541832676-9b763b0239ab?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 160,
+  "fields": {
+    "restaurant": 26,
+    "name": "Crispy Veg Burger",
+    "description": "Crispy seasoned vegetable patty with fresh lettuce, onions and creamy mayonnaise on toasted sesame bun.",
+    "price": 99.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 161,
+  "fields": {
+    "restaurant": 26,
+    "name": "Veg Whopper",
+    "description": "Iconic 7-layer flame-grilled patty burger with tomatoes, lettuce, mayo, pickles and onions on sesame bun.",
+    "price": 189.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 162,
+  "fields": {
+    "restaurant": 26,
+    "name": "Chicken Whopper",
+    "description": "Signature flame-grilled chicken patty topped with fresh juicy tomatoes, crisp lettuce and creamy sauce.",
+    "price": 219.0,
+    "vegetarian": false,
+    "picture": "https://images.unsplash.com/photo-1550547660-d9450f859349?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 163,
+  "fields": {
+    "restaurant": 26,
+    "name": "Crispy Chicken Burger",
+    "description": "Golden crispy fried chicken fillet topped with crunchy shredded lettuce and creamy herb sauce.",
+    "price": 139.0,
+    "vegetarian": false,
+    "picture": "https://images.unsplash.com/photo-1625813506062-0aeb1d7a094b?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 164,
+  "fields": {
+    "restaurant": 26,
+    "name": "Peri Peri Fries",
+    "description": "Golden crisp potato french fries sprinkled with hot and zesty African peri peri herb seasoning.",
+    "price": 119.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1576107232684-1279f3908594?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 165,
+  "fields": {
+    "restaurant": 26,
+    "name": "Crispy Chicken Wings (4 pcs)",
+    "description": "Crunchy breaded chicken wings deep-fried to a golden crunch and seasoned with aromatic spicy rub.",
+    "price": 199.0,
+    "vegetarian": false,
+    "picture": "https://images.unsplash.com/photo-1562967914-608f82629710?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 166,
+  "fields": {
+    "restaurant": 26,
+    "name": "Crunchy Veg Tacos",
+    "description": "Hard-shell corn taco stuffed with seasoned mashed bean patty, shredded lettuce, cheddar and salsa.",
+    "price": 129.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 167,
+  "fields": {
+    "restaurant": 26,
+    "name": "Thick Chocolate Shake",
+    "description": "Creamy rich chocolate shake blended with premium chocolate sauce and topped with chocolate drizzle.",
+    "price": 149.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 168,
+  "fields": {
+    "restaurant": 27,
+    "name": "Special Chole Bhature",
+    "description": "Two large fluffy golden bhaturas served with spicy authentic Amritsari chole, pickled onions and green chillies.",
+    "price": 195.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 169,
+  "fields": {
+    "restaurant": 27,
+    "name": "Special Butter Pav Bhaji",
+    "description": "Spicy mashed mixed vegetable curry loaded with pure Amul butter, served with 2 warm toasted pav buns.",
+    "price": 185.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1606491956689-2ea866880c84?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 170,
+  "fields": {
+    "restaurant": 27,
+    "name": "Delhi Special Raj Kachori",
+    "description": "Crispy king-size kachori filled with potatoes, sprouts, sweet curd, tamarind chutney and crunchy sev.",
+    "price": 145.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1601050690597-df0568f70950?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 171,
+  "fields": {
+    "restaurant": 27,
+    "name": "Paneer Tikka Roll",
+    "description": "Charcoal grilled cottage cheese cubes tossed in spicy mint masala wrapped in soft handmade roomali roti.",
+    "price": 175.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 172,
+  "fields": {
+    "restaurant": 27,
+    "name": "Punjabi Deluxe Thali",
+    "description": "Complete meal with Paneer Butter Masala, Dal Makhani, Veg Pulao, 2 Butter Naans, Raita, Salad & Gulab Jamun.",
+    "price": 299.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1610057099443-fde8c4d50f91?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 173,
+  "fields": {
+    "restaurant": 27,
+    "name": "Samosa with Chole (2 pcs)",
+    "description": "Crisp flaky triangular pastries filled with spicy potato filling, topped with hot chole and sweet saunth.",
+    "price": 95.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1601050690597-df0568f70950?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 174,
+  "fields": {
+    "restaurant": 27,
+    "name": "Kesar Rasmalai (2 pcs)",
+    "description": "Soft and spongy flattened cottage cheese balls soaked in thickened saffron and cardamom scented milk.",
+    "price": 115.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1589119908995-c6837fa14d48?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 175,
+  "fields": {
+    "restaurant": 27,
+    "name": "Hot Gulab Jamun (2 pcs)",
+    "description": "Golden brown khoya dumplings deep fried and soaked in aromatic rose and cardamom flavored sugar syrup.",
+    "price": 75.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1605197154332-9a5f78235129?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 176,
+  "fields": {
+    "restaurant": 28,
+    "name": "Special Masala Dosa",
+    "description": "Crisp golden fermented rice crepe filled with fragrant spiced onion potato masala, served with coconut chutney & sambar.",
+    "price": 135.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1668236543090-82eba5ee5976?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 177,
+  "fields": {
+    "restaurant": 28,
+    "name": "Ghee Roast Paper Dosa",
+    "description": "Extra-large wafer thin conical dosa roasted crisp in pure melted desi cow ghee, served with 3 chutneys.",
+    "price": 165.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1626777553635-be3239a58406?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 178,
+  "fields": {
+    "restaurant": 28,
+    "name": "Steamed Idli Sambar (3 pcs)",
+    "description": "Pillowy soft and fluffy steamed rice cakes served with steaming drumstick lentil sambar and fresh coconut chutney.",
+    "price": 85.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 179,
+  "fields": {
+    "restaurant": 28,
+    "name": "Crispy Medu Vada (2 pcs)",
+    "description": "Crispy on the outside, fluffy on the inside fried urad dal doughnuts seasoned with peppercorns and curry leaves.",
+    "price": 95.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1626777553635-be3239a58406?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 180,
+  "fields": {
+    "restaurant": 28,
+    "name": "Ghee Ven Pongal",
+    "description": "Comforting savory rice and moong dal porridge tempered in hot ghee with cumin, black pepper, ginger and cashews.",
+    "price": 125.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1630409346824-4f0e7b080087?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 181,
+  "fields": {
+    "restaurant": 28,
+    "name": "South Indian Special Thali",
+    "description": "Traditional banquet meal with Sambar, Rasam, Kootu, Poriyal, Curd, Steamed Rice, Appalam, Pickle & Sweet Payasam.",
+    "price": 245.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1610057099443-fde8c4d50f91?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 182,
+  "fields": {
+    "restaurant": 28,
+    "name": "Onion Rava Masala Dosa",
+    "description": "Lacy and crunchy semolina crepe studded with chopped red onions, green chillies, coriander and potato masala.",
+    "price": 145.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1668236543090-82eba5ee5976?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 183,
+  "fields": {
+    "restaurant": 28,
+    "name": "Madras Filter Coffee",
+    "description": "Traditional aromatic decoction brewed with chicory blended coffee beans and boiled frothy milk.",
+    "price": 65.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 184,
+  "fields": {
+    "restaurant": 29,
+    "name": "Steamed Veg Darjeeling Momos (6 pcs)",
+    "description": "Thin wrapper steamed dumplings filled with finely diced seasoned vegetables, served with spicy red chutney.",
+    "price": 149.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1625220194771-7ebdea0b70b9?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 185,
+  "fields": {
+    "restaurant": 29,
+    "name": "Steamed Chicken Momos (6 pcs)",
+    "description": "Juicy minced chicken blended with ginger, garlic, and fresh herbs in delicate steamed wrappers.",
+    "price": 179.0,
+    "vegetarian": false,
+    "picture": "https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 186,
+  "fields": {
+    "restaurant": 29,
+    "name": "Pan-Fried Schezwan Chicken Momos (6 pcs)",
+    "description": "Crisp pan-fried chicken dumplings tossed in a fiery red Schezwan sauce with spring onion greens.",
+    "price": 209.0,
+    "vegetarian": false,
+    "picture": "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 187,
+  "fields": {
+    "restaurant": 29,
+    "name": "Fried Paneer Momos (6 pcs)",
+    "description": "Golden fried crispy dumplings packed with grated spiced cottage cheese, served with spicy garlic mayonnaise.",
+    "price": 179.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1496116218417-1a781b1c416c?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 188,
+  "fields": {
+    "restaurant": 29,
+    "name": "Chicken MoBurg",
+    "description": "Crunchy deep-fried chicken momos layered inside a toasted soft burger bun with tandoori mayo and lettuce.",
+    "price": 129.0,
+    "vegetarian": false,
+    "picture": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 189,
+  "fields": {
+    "restaurant": 29,
+    "name": "Veg MoBurg",
+    "description": "Golden fried crispy vegetable momo placed inside a soft burger bun dressed with spicy schezwan mayo.",
+    "price": 109.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 190,
+  "fields": {
+    "restaurant": 29,
+    "name": "Chicken Thukpa Noodle Soup",
+    "description": "Hearty Tibetan hot soup made with steaming broth, wheat noodles, shredded chicken, and Asian greens.",
+    "price": 199.0,
+    "vegetarian": false,
+    "picture": "https://images.unsplash.com/photo-1552611052-33e04de081de?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 191,
+  "fields": {
+    "restaurant": 29,
+    "name": "Chocolate Momos (2 pcs)",
+    "description": "Crisp fried pastry shells bursting with warm melted chocolate fudge, dusted with sweet icing sugar.",
+    "price": 99.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 192,
+  "fields": {
+    "restaurant": 30,
+    "name": "Veggie Delite Sub (6-inch)",
+    "description": "Fresh crunchy blend of lettuce, tomatoes, cucumbers, capsicum, olives, and jalapenos on freshly baked multigrain bread.",
+    "price": 179.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1554433607-66b5efe9d304?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 193,
+  "fields": {
+    "restaurant": 30,
+    "name": "Paneer Tikka Sub (6-inch)",
+    "description": "Tender tandoori marinated paneer cubes paired with fresh vegetables and customized house sauces on toasted bread.",
+    "price": 229.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1509722747041-616f39b57569?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 194,
+  "fields": {
+    "restaurant": 30,
+    "name": "Roast Chicken Sub (6-inch)",
+    "description": "Herb roasted tender chicken slices paired with crisp salad greens and rich dressings on freshly baked bread.",
+    "price": 249.0,
+    "vegetarian": false,
+    "picture": "https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 195,
+  "fields": {
+    "restaurant": 30,
+    "name": "Chicken Teriyaki Sub (6-inch)",
+    "description": "Juicy chicken strips glazed in sweet and savory teriyaki sauce with crunchy capsicum, onions, and melted cheese.",
+    "price": 259.0,
+    "vegetarian": false,
+    "picture": "https://images.unsplash.com/photo-1554433607-66b5efe9d304?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 196,
+  "fields": {
+    "restaurant": 30,
+    "name": "Corn & Peas Sub (6-inch)",
+    "description": "Tender sweet golden corn and green peas blended in a light creamy mayonnaise dressing with fresh garden veggies.",
+    "price": 199.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1509722747041-616f39b57569?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 197,
+  "fields": {
+    "restaurant": 30,
+    "name": "Paneer Tikka Salad Bowl",
+    "description": "Nutrient-packed bowl of crisp mixed greens, olives, jalapenos, and grilled paneer cubes with vinaigrette.",
+    "price": 249.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 198,
+  "fields": {
+    "restaurant": 30,
+    "name": "Roast Chicken Salad Bowl",
+    "description": "High-protein bowl loaded with roasted chicken slices, crunchy bell peppers, cucumbers, and tangy southwest dressing.",
+    "price": 279.0,
+    "vegetarian": false,
+    "picture": "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 199,
+  "fields": {
+    "restaurant": 30,
+    "name": "Double Chocolate Chip Cookie",
+    "description": "Freshly baked soft and chewy cookie bursting with rich white and dark chocolate chips.",
+    "price": 69.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 200,
+  "fields": {
+    "restaurant": 31,
+    "name": "Special Hyderabadi Mutton Biryani",
+    "description": "World-renowned slow-cooked mutton biryani layered with royal basmati rice, infused with saffron and secret spices.",
+    "price": 449.0,
+    "vegetarian": false,
+    "picture": "https://images.unsplash.com/photo-1633945274405-b6c8069047b0?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 201,
+  "fields": {
+    "restaurant": 31,
+    "name": "Hyderabadi Chicken Dum Biryani",
+    "description": "The quintessential Hyderabad recipe with succulent bone-in chicken dum cooked over charcoal with fragrant rice.",
+    "price": 369.0,
+    "vegetarian": false,
+    "picture": "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 202,
+  "fields": {
+    "restaurant": 31,
+    "name": "Royal Egg Biryani",
+    "description": "Hard-boiled eggs browned in aromatic spices and buried in layers of flavored basmati rice with golden onions.",
+    "price": 269.0,
+    "vegetarian": false,
+    "picture": "https://images.unsplash.com/photo-1589302168068-964664d93dc0?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 203,
+  "fields": {
+    "restaurant": 31,
+    "name": "Veg Hyderabadi Biryani",
+    "description": "Carrots, green beans, potatoes and cottage cheese simmered in spicy masala gravy, layered with fragrant rice.",
+    "price": 279.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1645177628172-a94c1f96e6db?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 204,
+  "fields": {
+    "restaurant": 31,
+    "name": "Chicken Reshmi Kebab (6 pcs)",
+    "description": "Silky smooth boneless chicken marinated in cashew nut paste, fresh malai cream and grilled over gentle heat.",
+    "price": 329.0,
+    "vegetarian": false,
+    "picture": "https://images.unsplash.com/photo-1599488615731-7e5c2823ff28?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 205,
+  "fields": {
+    "restaurant": 31,
+    "name": "Mutton Seekh Kebab (4 pcs)",
+    "description": "Finely minced fresh mutton spiced with roasted cumin, mint, green coriander, and skewered to juicy perfection.",
+    "price": 389.0,
+    "vegetarian": false,
+    "picture": "https://images.unsplash.com/photo-1610057099431-d73a1c9d2f2f?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 206,
+  "fields": {
+    "restaurant": 31,
+    "name": "Mirchi Ka Salan (Gravy)",
+    "description": "Authentic Hyderabadi spicy gravy prepared with charred green chillies, peanuts, coconut, and sesame seeds.",
+    "price": 119.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 207,
+  "fields": {
+    "restaurant": 31,
+    "name": "Double Ka Meetha",
+    "description": "Royal Hyderabadi dessert of fried crispy bread cubes soaked in saffron condensed milk, garnished with dry fruits.",
+    "price": 109.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1541832676-9b763b0239ab?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 208,
+  "fields": {
+    "restaurant": 32,
+    "name": "Mississippi Mud Ice Cream Scoop",
+    "description": "Rich dark chocolate ice cream loaded with chocolate fudge cake chunks and ribbons of chocolate ganache.",
+    "price": 139.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1501443762994-82bd5dace89a?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 209,
+  "fields": {
+    "restaurant": 32,
+    "name": "Cotton Candy Ice Cream Scoop",
+    "description": "Whimsical swirl of pastel pink and purple ice cream tasting delightfully like spun carnival cotton candy.",
+    "price": 129.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 210,
+  "fields": {
+    "restaurant": 32,
+    "name": "Belgian Chocolate Ice Cream Scoop",
+    "description": "Deep and decadent dark chocolate ice cream crafted with real cocoa and bittersweet chocolate shavings.",
+    "price": 149.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 211,
+  "fields": {
+    "restaurant": 32,
+    "name": "Alphonso Mango Ice Cream Scoop",
+    "description": "Sweet sunshine churned into cream with authentic puree of ripe Ratnagiri Alphonso mangoes.",
+    "price": 129.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1501443762994-82bd5dace89a?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 212,
+  "fields": {
+    "restaurant": 32,
+    "name": "Banana Caramel Sundae",
+    "description": "Fresh sliced bananas served with twin scoops of vanilla and praline ice cream, drenched in buttery caramel.",
+    "price": 229.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 213,
+  "fields": {
+    "restaurant": 32,
+    "name": "Warm Brownie Sundae",
+    "description": "A dense fudgy walnut brownie served warm with a scoop of vanilla ice cream, hot chocolate fudge and roasted nuts.",
+    "price": 249.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 214,
+  "fields": {
+    "restaurant": 32,
+    "name": "Chocolate Overload Waffle",
+    "description": "Freshly pressed crisp golden waffle topped with Belgian chocolate ice cream, chocolate syrup and choco chips.",
+    "price": 219.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1562376552-0d160a2f238d?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 215,
+  "fields": {
+    "restaurant": 32,
+    "name": "Alphonso Mango Thick Shake",
+    "description": "Rich thick shake hand-spun with real Alphonso mango ice cream and chilled milk, served extra thick.",
+    "price": 199.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 216,
+  "fields": {
+    "restaurant": 33,
+    "name": "Ginger Cardamom Chai Flask (500ml)",
+    "description": "Freshly brewed hot tea infused with freshly pounded ginger root and aromatic green cardamom in heat-retentive flask.",
+    "price": 179.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 217,
+  "fields": {
+    "restaurant": 33,
+    "name": "Masala Chai Flask (500ml)",
+    "description": "Signature aromatic Indian tea brewed with black tea leaves, cinnamon, cloves, black pepper, and fresh milk.",
+    "price": 169.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 218,
+  "fields": {
+    "restaurant": 33,
+    "name": "Filter Coffee Flask (500ml)",
+    "description": "South Indian style strong chicory filter coffee decoction blended with hot foamed milk, serves 3-4 cups.",
+    "price": 189.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 219,
+  "fields": {
+    "restaurant": 33,
+    "name": "Irani Bun Maska",
+    "description": "Classic soft Mumbai style sweet bun sliced open and slathered with pure salted Amul butter.",
+    "price": 69.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 220,
+  "fields": {
+    "restaurant": 33,
+    "name": "Bun Maska with Jam",
+    "description": "Warm soft sweet bakery bun generously loaded with salted butter and sweet strawberry mixed fruit jam.",
+    "price": 79.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 221,
+  "fields": {
+    "restaurant": 33,
+    "name": "Paneer Tikka Sandwich",
+    "description": "Grilled wholesome multigrain bread sandwich stuffed with tandoori spiced paneer cubes and mint spread.",
+    "price": 159.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 222,
+  "fields": {
+    "restaurant": 33,
+    "name": "Egg & Cheese Sandwich",
+    "description": "Freshly made pepper seasoned fluffy egg omelette with melted cheddar cheese in toasted bread.",
+    "price": 149.0,
+    "vegetarian": false,
+    "picture": "https://images.unsplash.com/photo-1554433607-66b5efe9d304?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 223,
+  "fields": {
+    "restaurant": 33,
+    "name": "Banana Walnut Cake Slice",
+    "description": "Moist, oven-baked tea time cake loaf slice packed with sweet ripe bananas and crunchy walnut chunks.",
+    "price": 89.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 224,
+  "fields": {
+    "restaurant": 34,
+    "name": "Butter Chicken (Murgh Makhani)",
+    "description": "Charcoal grilled boneless chicken tikka cooked in satin smooth tomato gravy with fresh cream and butter.",
+    "price": 445.0,
+    "vegetarian": false,
+    "picture": "https://images.unsplash.com/photo-1610057099431-d73a1c9d2f2f?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 225,
+  "fields": {
+    "restaurant": 34,
+    "name": "Dal Punjab Grill (Dal Makhani)",
+    "description": "Black lentils and kidney beans slow simmered for over 16 hours with cream, butter, and fenugreek leaves.",
+    "price": 345.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 226,
+  "fields": {
+    "restaurant": 34,
+    "name": "Paneer Lababdar",
+    "description": "Soft cottage cheese batons tossed with diced onions and bell peppers in a rich spiced cashew tomato gravy.",
+    "price": 385.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 227,
+  "fields": {
+    "restaurant": 34,
+    "name": "Tandoori Murgh (Half)",
+    "description": "Tender bone-in chicken marinated in spiced hung yogurt, Kashmiri paprika, and roasted over glowing charcoal.",
+    "price": 395.0,
+    "vegetarian": false,
+    "picture": "https://images.unsplash.com/photo-1599488615731-7e5c2823ff28?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 228,
+  "fields": {
+    "restaurant": 34,
+    "name": "Bhatti Ka Paneer Tikka",
+    "description": "Thick cubes of fresh paneer marinated with crushed spices and grilled in clay tandoor with onions and capsicum.",
+    "price": 365.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 229,
+  "fields": {
+    "restaurant": 34,
+    "name": "Garlic Butter Naan",
+    "description": "Soft leavened refined flour flatbread baked on the walls of clay tandoor, brushed with garlic butter.",
+    "price": 75.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1601050690113-91187428f521?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 230,
+  "fields": {
+    "restaurant": 34,
+    "name": "Subz Dum Biryani",
+    "description": "Assorted fresh seasonal vegetables and aromatic basmati rice cooked on dum with mint and saffron.",
+    "price": 325.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1645177628172-a94c1f96e6db?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 231,
+  "fields": {
+    "restaurant": 34,
+    "name": "Gulab Jamun with Rabri",
+    "description": "Warm spongy khoya gulab jamuns served over a bed of chilled saffron infused thickened sweet rabri.",
+    "price": 145.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1605197154332-9a5f78235129?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 232,
+  "fields": {
+    "restaurant": 35,
+    "name": "Classic Hakka Noodles",
+    "description": "Wok-tossed noodles with shredded cabbage, carrots, bell peppers, spring onions and light soy seasoning.",
+    "price": 245.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 233,
+  "fields": {
+    "restaurant": 35,
+    "name": "Chicken Hakka Noodles",
+    "description": "Stir-fried noodles with julienned tender chicken breast, egg threads, fresh vegetables and dark soy.",
+    "price": 295.0,
+    "vegetarian": false,
+    "picture": "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 234,
+  "fields": {
+    "restaurant": 35,
+    "name": "Vegetable Fried Rice",
+    "description": "Fluffy aromatic Jasmine rice wok-tossed with diced carrots, french beans, spring onions and garlic oil.",
+    "price": 235.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 235,
+  "fields": {
+    "restaurant": 35,
+    "name": "Chicken Fried Rice",
+    "description": "Fragrant wok-tossed rice with seasoned chicken cubes, scrambled egg, chopped scallions and light seasoning.",
+    "price": 285.0,
+    "vegetarian": false,
+    "picture": "https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 236,
+  "fields": {
+    "restaurant": 35,
+    "name": "Veg Manchurian Gravy",
+    "description": "Crisp vegetable balls simmered in a savory, tangy brown sauce made with dark soy, garlic, and fresh chillies.",
+    "price": 265.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 237,
+  "fields": {
+    "restaurant": 35,
+    "name": "Chilli Chicken Dry",
+    "description": "Crispy battered chicken bites wok-tossed with spicy green chillies, garlic, onion chunks and soy sauce.",
+    "price": 345.0,
+    "vegetarian": false,
+    "picture": "https://images.unsplash.com/photo-1562967914-608f82629710?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 238,
+  "fields": {
+    "restaurant": 35,
+    "name": "Crispy Spring Rolls",
+    "description": "Golden fried pastry rolls stuffed with finely shredded stir-fried vegetables, served with sweet chilli dip.",
+    "price": 225.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1496116218417-1a781b1c416c?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 239,
+  "fields": {
+    "restaurant": 35,
+    "name": "Chicken Siu Mai Dim Sum (6 pcs)",
+    "description": "Open-topped steamed delicate dim sums filled with minced chicken and spring onions, garnished with carrot roe.",
+    "price": 295.0,
+    "vegetarian": false,
+    "picture": "https://images.unsplash.com/photo-1496116218417-1a781b1c416c?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 240,
+  "fields": {
+    "restaurant": 36,
+    "name": "Crispy Crunchy Veg Taco",
+    "description": "Crunchy corn taco shell filled with seasoned pinto beans, crisp iceberg lettuce and cheddar cheese.",
+    "price": 99.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 241,
+  "fields": {
+    "restaurant": 36,
+    "name": "Crispy Crunchy Chicken Taco",
+    "description": "Signature crunchy taco shell packed with seasoned grilled chicken, shredded cheese, and fresh diced tomatoes.",
+    "price": 129.0,
+    "vegetarian": false,
+    "picture": "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 242,
+  "fields": {
+    "restaurant": 36,
+    "name": "Cheesy Double Decker Taco",
+    "description": "Warm soft tortilla wrapped around a crunchy taco shell with melted nacho cheese sauce in between.",
+    "price": 159.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 243,
+  "fields": {
+    "restaurant": 36,
+    "name": "7-Layer Burrito",
+    "description": "Soft warm flour tortilla filled with Mexican seasoned rice, black beans, sour cream, guacamole, lettuce and cheese.",
+    "price": 199.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 244,
+  "fields": {
+    "restaurant": 36,
+    "name": "Chicken Quesadilla",
+    "description": "Grilled folded flour tortilla stuffed with tender grilled chicken chunks and melted three-cheese blend with creamy jalapeno sauce.",
+    "price": 229.0,
+    "vegetarian": false,
+    "picture": "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 245,
+  "fields": {
+    "restaurant": 36,
+    "name": "Loaded Nachos with Cheese",
+    "description": "Crispy corn tortilla chips piled high with warm melted cheese sauce, fresh pico de gallo, and sliced pickled jalapenos.",
+    "price": 169.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1513456852971-30c0b8199d4d?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 246,
+  "fields": {
+    "restaurant": 36,
+    "name": "Crispy Chicken Strips (4 pcs)",
+    "description": "Tender boneless chicken tenderloin strips coated in tortilla breading and fried crispy with habanero ranch dip.",
+    "price": 189.0,
+    "vegetarian": false,
+    "picture": "https://images.unsplash.com/photo-1562967914-608f82629710?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.item",
+  "pk": 247,
+  "fields": {
+    "restaurant": 36,
+    "name": "Cinnamon Twists",
+    "description": "Crispy puffed corn spirals dusted generously with fragrant sweet cinnamon sugar.",
+    "price": 89.0,
+    "vegetarian": true,
+    "picture": "https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=600&auto=format&fit=crop&q=80"
+  }
+},
+{
+  "model": "delivery.customer",
+  "pk": 1,
+  "fields": {
+    "username": "ganesh_k",
+    "password": "ganesh",
+    "email": "ganesh@gmail.com",
+    "phone": "9347561849",
+    "address": "Flat 402, Lotus Orchid Apartments, 100ft Road, Indiranagar, Near Indiranagar Metro Station, Bengaluru"
+  }
+},
+{
+  "model": "delivery.customer",
+  "pk": 2,
+  "fields": {
+    "username": "g",
+    "password": "g123",
+    "email": "g@gmail.com",
+    "phone": "1234567890",
+    "address": "kasthuri kandriga 4-3a"
+  }
+},
+{
+  "model": "delivery.coupon",
+  "pk": 1,
+  "fields": {
+    "code": "FIRSTBITE",
+    "description": "50% OFF up to ₹120 on your order",
+    "discount_percent": 50.0,
+    "flat_discount": 0.0,
+    "min_order_value": 199.0,
+    "max_discount": 120.0,
+    "is_free_delivery": false,
+    "is_active": true
+  }
+},
+{
+  "model": "delivery.coupon",
+  "pk": 2,
+  "fields": {
+    "code": "YUM20",
+    "description": "20% OFF up to ₹80 on any meal",
+    "discount_percent": 20.0,
+    "flat_discount": 0.0,
+    "min_order_value": 149.0,
+    "max_discount": 80.0,
+    "is_free_delivery": false,
+    "is_active": true
+  }
+},
+{
+  "model": "delivery.coupon",
+  "pk": 3,
+  "fields": {
+    "code": "FREEDEL",
+    "description": "Free Delivery on orders above ₹99",
+    "discount_percent": 0.0,
+    "flat_discount": 0.0,
+    "min_order_value": 99.0,
+    "max_discount": 0.0,
+    "is_free_delivery": true,
+    "is_active": true
+  }
+},
+{
+  "model": "delivery.coupon",
+  "pk": 4,
+  "fields": {
+    "code": "FEAST100",
+    "description": "Flat ₹100 OFF on orders above ₹399",
+    "discount_percent": 0.0,
+    "flat_discount": 100.0,
+    "min_order_value": 399.0,
+    "max_discount": 0.0,
+    "is_free_delivery": false,
+    "is_active": true
+  }
+},
+{
+  "model": "delivery.address",
+  "pk": 1,
+  "fields": {
+    "customer": 1,
+    "tag": "Home",
+    "flat_house": "Flat 402, Lotus Orchid Apartments",
+    "area": "100ft Road, Indiranagar",
+    "landmark": "Near Indiranagar Metro Station",
+    "city": "Bengaluru",
+    "is_default": true,
+    "created_at": "2026-10-04T07:49:23.866Z"
+  }
+},
+{
+  "model": "delivery.address",
+  "pk": 2,
+  "fields": {
+    "customer": 1,
+    "tag": "Work",
+    "flat_house": "Embassy TechVillage, Block 2B, 4th Floor",
+    "area": "Outer Ring Road, Devarabisanahalli, Bellandur",
+    "landmark": "Near Cessna Business Park",
+    "city": "Bengaluru",
+    "is_default": false,
+    "created_at": "2026-10-04T07:49:23.872Z"
+  }
+}
 ]

@@ -7,52 +7,68 @@
     <title>YumYatra - Update Restaurant</title>
     <link rel="stylesheet" href="{% static 'premium.css' %}">
 </head>
-<body>
-    <div class="app-container" style="max-width: 600px; margin: 0 auto;">
-        <!-- Navigation Bar -->
-        <header class="navbar" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 0; margin-bottom: 30px; border-bottom: 1px solid var(--glass-border);">
-            <div class="navbar-brand" style="margin: 0; padding: 0; background: none;">
-                <a href="{% url 'admin_home' %}" style="background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 1.8rem; font-family: var(--font-heading); font-weight: 800;">🍕 YumYatra</a>
+<body style="background: #f8f9fa;">
+    <div class="app-container" style="max-width: 540px; margin: 0 auto; padding-top: 20px;">
+        <!-- Clean Navbar -->
+        <header class="navbar" style="margin-bottom: 25px;">
+            <div class="navbar-brand">
+                <a href="{% url 'admin_home' %}">🍕 YumYatra Admin</a>
             </div>
             <div>
-                <a href="{% url 'open_show_restaurant' %}" style="background: transparent; border: 1px solid rgba(255, 255, 255, 0.2); color: #94a3b8; padding: 8px 20px; font-size: 0.9rem; border-radius: 10px; font-weight: 500; text-decoration: none; display: inline-block; -webkit-text-fill-color: #94a3b8; white-space: nowrap; transition: all 0.3s;" onmouseover="this.style.background='rgba(255, 255, 255, 0.05)'; this.style.borderColor='rgba(255, 255, 255, 0.4)'; this.style.color='#f8fafc'; this.style.webkitTextFillColor='#f8fafc';" onmouseout="this.style.background='transparent'; this.style.borderColor='rgba(255, 255, 255, 0.2)'; this.style.color='#94a3b8'; this.style.webkitTextFillColor='#94a3b8';">⬅️ Cancel</a>
+                <a href="{% url 'open_show_restaurant' %}" class="btn-back">
+                    &larr; Cancel
+                </a>
             </div>
         </header>
 
-        <div class="header-welcome" style="text-align: left; margin-bottom: 30px;">
-            <h2 style="text-align: left; margin: 0; font-size: 1.8rem; background: none; -webkit-text-fill-color: initial; color: var(--text-primary);">Edit Restaurant Info ✏️</h2>
-            <p style="color: var(--text-secondary); margin-top: 5px;">Update details for {{ restaurant.name }}.</p>
+        <!-- Flash Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert-box {% if message.tags == 'error' %}alert-error{% else %}alert-success{% endif %}">
+                    <span>{% if message.tags == 'error' %}⚠️{% else %}✅{% endif %}</span>
+                    <span>{{ message }}</span>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="card" style="padding: 28px; box-shadow: var(--shadow-sm);">
+            <div style="margin-bottom: 20px;">
+                <h1 style="text-align: left; margin: 0 0 4px; font-size: 1.5rem;">Edit Restaurant: {{ restaurant.name }} ✏️</h1>
+                <p style="color: var(--text-secondary); margin: 0; font-size: 0.88rem;">Update details and credentials.</p>
+            </div>
+
+            <form action="{% url 'update_restaurant' restaurant.id %}" method="POST" style="margin: 0; padding: 0; border: none; box-shadow: none;">
+                {% csrf_token %}
+                <div style="margin-bottom: 16px;">
+                    <label style="font-size: 0.85rem; font-weight: 600;">Restaurant Name</label>
+                    <input type="text" name="name" value="{{ restaurant.name }}" required style="margin-bottom: 0;">
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <label style="font-size: 0.85rem; font-weight: 600;">Cover Image URL</label>
+                    <input type="url" name="picture" value="{{ restaurant.picture }}" placeholder="https://..." style="margin-bottom: 0;">
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <label style="font-size: 0.85rem; font-weight: 600;">Cuisine Specialties</label>
+                    <input type="text" name="cuisine" value="{{ restaurant.cuisine }}" required style="margin-bottom: 0;">
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <label style="font-size: 0.85rem; font-weight: 600;">Partner Portal Password</label>
+                    <input type="text" name="password" value="{{ restaurant.password }}" required style="margin-bottom: 0;">
+                </div>
+
+                <div style="margin-bottom: 24px;">
+                    <label style="font-size: 0.85rem; font-weight: 600;">Rating</label>
+                    <input type="number" name="rating" min="1" max="5" step="0.1" value="{{ restaurant.rating }}" style="margin-bottom: 0;">
+                </div>
+
+                <button type="submit" class="btn" style="width: 100%; padding: 12px; font-size: 0.95rem; border-radius: 8px;">
+                    Save Changes
+                </button>
+            </form>
         </div>
-
-        <form action="{% url 'update_restaurant' restaurant.id %}" method="POST" style="margin: 0;">
-            {% csrf_token %}
-            <div style="margin-bottom: 20px;">
-                <label style="display: block; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-secondary);">Restaurant Name</label>
-                <input type="text" name="name" value="{{ restaurant.name }}" required style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--glass-border); background: rgba(255, 255, 255, 0.03); color: white;">
-            </div>
-
-            <div style="margin-bottom: 20px;">
-                <label style="display: block; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-secondary);">Cover Image URL</label>
-                <input type="url" name="picture" value="{{ restaurant.picture }}" placeholder="https://..." style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--glass-border); background: rgba(255, 255, 255, 0.03); color: white;">
-            </div>
-
-            <div style="margin-bottom: 20px;">
-                <label style="display: block; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-secondary);">Cuisine Specialties</label>
-                <input type="text" name="cuisine" value="{{ restaurant.cuisine }}" required style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--glass-border); background: rgba(255, 255, 255, 0.03); color: white;">
-            </div>
-
-            <div style="margin-bottom: 20px;">
-                <label style="display: block; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-secondary);">Partner Portal Password</label>
-                <input type="text" name="password" value="{{ restaurant.password }}" required style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--glass-border); background: rgba(255, 255, 255, 0.03); color: white;">
-            </div>
-
-            <div style="margin-bottom: 30px;">
-                <label style="display: block; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-secondary);">Rating</label>
-                <input type="number" name="rating" min="0" max="5" step="0.1" value="{{ restaurant.rating }}" style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--glass-border); background: rgba(255, 255, 255, 0.03); color: white;">
-            </div>
-
-            <button type="submit" style="width: 100%; padding: 14px; font-size: 1rem;">Save Changes</button>
-        </form>
     </div>
 </body>
 </html>

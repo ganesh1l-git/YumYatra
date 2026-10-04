@@ -8,6 +8,21 @@ class Customer(models.Model):
     phone = models.CharField(max_length=10)
     address = models.TextField(max_length=100)
 
+    def get_active_address(self):
+        active = self.saved_addresses.filter(is_default=True).first()
+        if not active:
+            active = self.saved_addresses.first()
+        if not active and self.address:
+            active = Address.objects.create(
+                customer=self,
+                tag='Home',
+                flat_house=self.address,
+                area='Indiranagar',
+                city='Bengaluru',
+                is_default=True
+            )
+        return active
+
     def __str__(self):
         return self.username
 
@@ -65,6 +80,9 @@ class CartItem(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
 
+    def subtotal(self):
+        return round(self.item.price * self.quantity, 2)
+
 class Coupon(models.Model):
     code = models.CharField(max_length=30, unique=True)
     description = models.CharField(max_length=150, default='')
@@ -115,6 +133,7 @@ class Order(models.Model):
     delivery_fee = models.FloatField()
     service_fee = models.FloatField()
     grand_total = models.FloatField()
+    delivery_address = models.TextField(blank=True, default='')
 
     def __str__(self):
         return f"Order #{self.id} by {self.customer.username} ({self.status})"
@@ -149,3 +168,26 @@ class Favorite(models.Model):
 
     def __str__(self):
         return f"{self.customer.username} ❤️ {self.restaurant.name}"
+
+class Address(models.Model):
+    TAG_CHOICES = [
+        ('Home', 'Home'),
+        ('Work', 'Work'),
+        ('Other', 'Other'),
+    ]
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="saved_addresses")
+    tag = models.CharField(max_length=20, choices=TAG_CHOICES, default='Home')
+    flat_house = models.CharField(max_length=120, default='')
+    area = models.CharField(max_length=200, default='')
+    landmark = models.CharField(max_length=120, blank=True, default='')
+    city = models.CharField(max_length=60, default='Bengaluru')
+    is_default = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def full_address(self):
+        parts = [self.flat_house, self.area, self.landmark, self.city]
+        valid_parts = [p.strip() for p in parts if p and p.strip()]
+        return ", ".join(valid_parts) if valid_parts else self.customer.address
+
+    def __str__(self):
+        return f"{self.customer.username} ({self.tag}): {self.full_address()}"
